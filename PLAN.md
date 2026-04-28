@@ -132,23 +132,24 @@ Numpang is a Flutter-based multi-platform navigation app with Clean Architecture
 ### Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Presentation Layer                    │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │   Screens   │  │    Widgets   │  │  BLoC States   │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-├─────────────────────────────────────────────────────────┤
-│                      Domain Layer                        │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │  Entities   │  │ Repositories │  │   Use Cases    │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-├─────────────────────────────────────────────────────────┤
-│                       Data Layer                         │
-│  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │   Models    │  │  Datasources │  │  Repositories  │  │
-│  └─────────────┘  └──────────────┘  └────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+lib/
+├── core/              # Constants, errors, theme, utils
+├── data/              # Models, datasources, repository implementations
+│   ├── datasources/   # Remote (API) and local (in-memory/Hive)
+│   ├── models/        # Data models with JSON serialization
+│   └── repositories/  # Repository implementations
+├── domain/            # Pure Dart (NO Flutter imports)
+│   ├── entities/      # Destination, UserLocation, PlaceSuggestion
+│   ├── repositories/  # Abstract interfaces (DestinationRepository, GeocodingRepository)
+│   ├── usecases/      # AddDestination, GetDestinations, SearchAddress, ReverseGeocode
+│   └── errors/        # Failure classes
+└── presentation/      # Flutter UI
+    ├── bloc/          # DestinationBloc, MapBloc, SearchBloc
+    ├── screens/      # MapScreen, SettingsScreen
+    └── widgets/       # Reusable widgets
 ```
+
+**Dependency Rule:** Source code dependencies point inward. Domain has NO Flutter imports.
 
 ### Integration Points
 
