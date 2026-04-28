@@ -1,0 +1,60 @@
+name: numpang_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dio: ^5.9.2
+  dynamic_color: ^1.8.1
+  flutter_flavorizr: ^2.4.2
+  flutter_dotenv: ^6.0.1
+  bloc: ^9.2.0
+  flutter_bloc: ^9.1.1
+  provider: ^6.1.5
+  equatable: ^2.0.7
+  dartz: ^0.10.1
+  uuid: ^4.4.2
+  flutter_map: ^8.3.0
+  latlong2: ^0.9.1
+
+flavorizr:
+  ide: "vscode"
+  app:
+    android:
+      flavorDimensions: "flavor-type"
+
+  flavors:
+    dev:
+      app:
+        name: "Numpang Dev"
+      android:
+        applicationId: "com.rizkyeky.numpangdev"
+      ios:
+        bundleId: "com.rizkyeky.numpangdev"
+      macos:
+        bundleId: "com.rizkyeky.numpangdev"
+    prod:
+      app:
+        name: "Numpang"
+      android:
+        applicationId: "com.rizkyeky.numpang"
+      ios:
+        bundleId: "com.rizkyeky.numpang"
+      macos:
+        bundleId: "com.rizkyeky.numpang"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  bloc_test: ^10.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.4.12
+
+flutter:
+  uses-material-design: true
