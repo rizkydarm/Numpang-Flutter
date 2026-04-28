@@ -16,6 +16,8 @@ Numpang is a Flutter-based multi-platform navigation app with Clean Architecture
 - ✅ Responsive layout adapts to 3 breakpoints (phone/tablet/desktop)
 - ✅ All BLoC states are testable with >80% unit test coverage
 - ✅ App achieves 60 FPS on target devices
+- ✅ Geocoding API integration complete with fallback (Nominatim → Mapbox)
+- ✅ Rate-limit handling with client-side caching (LRU, 24h TTL)
 
 ---
 
@@ -76,6 +78,13 @@ Numpang is a Flutter-based multi-platform navigation app with Clean Architecture
   - Button is disabled if location already in list
   - Success feedback shown after adding (snackbar/toast)
 
+**US-2.4**: As a user, I want to reorder destinations so I can organize my trip sequence. (Stretch Goal)
+- **AC**:
+  - Drag handle on each destination list item
+  - Destinations can be reordered via drag-and-drop
+  - Map markers update to reflect new order
+  - Order persists across sessions
+
 #### EPIC 3: Responsive Design
 
 **US-3.1**: As a tablet user, I want the app to use landscape layout so I can see more map context.
@@ -108,6 +117,13 @@ Numpang is a Flutter-based multi-platform navigation app with Clean Architecture
 - ❌ Offline map support
 - ❌ Voice navigation
 - ❌ Public transit routing
+- ❌ Road distance/time API (straight-line distance only)
+- ❌ Turn-by-turn directions
+
+### Stretch Goals
+
+- **US-2.4**: Reorder destinations via drag handle
+- **Distance between destinations**: Compute using OSRM/GraphHopper API (road distance, not turn-by-turn)
 
 ---
 
@@ -225,8 +241,39 @@ class MapCenterUpdated extends DestinationState {
 |-----|----------|-------|
 | OpenStreetMap Tiles | `tile.openstreetmap.org` | Map tiles |
 | Nominatim | `nominatim.openstreetmap.org` | Geocoding, search (Default) |
-| Mapbox Geocoding | `api.mapbox.com/search/geocode/v6/` | Geocoding, search (Option 2) |
+| Mapbox Geocoding | `api.mapbox.com/search/geocode/v6/` | Geocoding, search (Fallback) |
 | Geocode.xyz | `geocode.xyz/api` | Geocoding, search (Option 3) |
+
+#### Geocoding Service Architecture
+
+```dart
+// domain/repositories/geocoding_repository.dart
+abstract class GeocodingRepository {
+  Future<Either<Failure, LatLng>> searchAddress(String query);
+  Future<Either<Failure, String>> reverseGeocode(LatLng position);
+  Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(String input);
+}
+```
+
+**Fallback Strategy:**
+- **Default:** Nominatim (free, no key required)
+- **Limitations:** 1 request/second rate limit
+- **Mitigation:**
+  - Client-side LRU caching for reverse geocoding results (24h TTL)
+  - Queue with 300ms debounce for autocomplete
+  - Optional Mapbox API key for production (higher quota)
+  - Configurable via `GEOCODING_PROVIDER` env variable
+
+**Environment Configuration:**
+```env
+GEOCODING_PROVIDER=nominatim   # or mapbox
+MAPBOX_API_KEY=your_key_here
+```
+
+**Testing Requirements:**
+- Unit tests for API response parsing (mock HTTP client)
+- Error simulation: 429 rate limit, 500 server error → verify `Either<Failure, T>` handling
+- Integration test (optional) with local Nominatim Docker container
 
 ### Security Requirements
 
@@ -264,18 +311,39 @@ class MapCenterUpdated extends DestinationState {
 
 **Milestone M1**: Project builds successfully on all 3 platforms with flavors
 
-### Phase 2: Map Core (Days 4-7)
+### Phase 2: Data Layer & Geocoding API (Days 4-7)
 
-**Agent A: Data Layer**
-- [ ] Create `DestinationModel` with serialization
-- [ ] Implement `DestinationLocalDataSource` (in-memory first)
-- [ ] Implement `DestinationRemoteDataSource` (Nominatim/Mapbox)
+> **Agent A only – no UI work until Phase 3**
+
+- [ ] Create `GeocodingRepository` interface
+- [ ] Implement `NominatimGeocodingRepository` with Dio + caching
+- [ ] Implement fallback to Mapbox (configurable via `.env`)
+- [ ] Create `LocationService` (permission handling, stream of user location)
+- [ ] Implement `DestinationLocalDataSource` (in-memory with Hive/VMO for persistence)
+- [ ] Implement `DestinationRemoteDataSource` (save/load from local – cloud out of scope)
+- [ ] Create `DestinationModel` with JSON serialization
 - [ ] Implement `DestinationRepositoryImpl`
-- [ ] Create `MapService` wrapper for flutter_map
-- [ ] Create `LocationService` for user location
-- [ ] Write unit tests for repositories
+- [ ] Add LRU cache for reverse geocoding (24h TTL)
+- [ ] Add debounce for autocomplete (300ms)
+- [ ] Write unit tests for all repository methods (>=90% coverage)
+- [ ] Provide mock implementations for Agent B to use during UI development
 
-**Agent B: Map UI**
+**Testing Strategy:**
+- Unit tests for API response parsing (mock HTTP client)
+- Error simulation: 429 rate limit, 500 server error → verify `Either<Failure, T>` handling
+
+**Milestone M2**: All data layer tests pass, geocoding works with real API
+
+### Phase 3: Map Core (Days 8-11)
+
+**Agent A: Map BLoC & Service**
+- [ ] Create `MapBloc` for map-specific state
+- [ ] Implement `MapService` wrapper for flutter_map
+- [ ] Create `SearchBloc` for search state
+- [ ] Wire geocoding services to BLoC handlers
+- [ ] Write BLoC tests with `bloc_test`
+
+**Agent B: Map UI** (uses mock repositories until M2 is complete)
 - [ ] Create `MapScreen` with flutter_map widget
 - [ ] Implement custom Amber map styling
 - [ ] Add user location dot with pulse animation
@@ -285,16 +353,15 @@ class MapCenterUpdated extends DestinationState {
 - [ ] Add crosshair FAB for recenter
 - [ ] Write widget tests for map interactions
 
-**Milestone M2**: Map displays with user location, tap adds marker
+**Milestone M3**: Map displays with user location, tap adds marker
 
-### Phase 3: Destination Management (Days 8-12)
+### Phase 4: Destination Management (Days 12-16)
 
 **Agent A: BLoC Implementation**
 - [ ] Create `DestinationBloc` with all events/states
 - [ ] Wire use cases to BLoC handlers
 - [ ] Implement error handling with Either type
 - [ ] Add state persistence (save/restore)
-- [ ] Create `MapBloc` for map-specific state
 - [ ] Write BLoC tests with `bloc_test`
 - [ ] Achieve >80% test coverage
 
@@ -308,14 +375,12 @@ class MapCenterUpdated extends DestinationState {
 - [ ] Add FAB for manual add from current position
 - [ ] Connect BLoC to UI with `BlocBuilder`/`BlocListener`
 
-**Milestone M3**: Full CRUD flow works (add via tap, delete from list)
+**Milestone M4**: Full CRUD flow works (add via tap, delete from list)
 
-### Phase 4: Search & Discovery (Days 13-16)
+### Phase 5: Search & Discovery (Days 17-20)
 
 **Agent A: Search Logic**
-- [ ] Create `SearchBloc` for search state
-- [ ] Implement Places API autocomplete
-- [ ] Add debounce for search queries (300ms)
+- [ ] Implement Places API autocomplete with debounce
 - [ ] Implement place details fetching
 - [ ] Add recent searches (local storage)
 - [ ] Create category chips data structure
@@ -331,9 +396,9 @@ class MapCenterUpdated extends DestinationState {
 - [ ] Show loading state during search
 - [ ] Handle search errors gracefully
 
-**Milestone M4**: Search returns results, selecting centers map, user can add
+**Milestone M5**: Search returns results, selecting centers map, user can add
 
-### Phase 5: Responsive Design (Days 17-20)
+### Phase 6: Responsive Design (Days 21-24)
 
 **Agent A: Layout System**
 - [ ] Create `ResponsiveLayout` widget
@@ -352,9 +417,9 @@ class MapCenterUpdated extends DestinationState {
 - [ ] Add settings page with adaptive layout
 - [ ] Test all layouts on target breakpoints
 
-**Milestone M5**: App adapts to phone/tablet/desktop with appropriate layouts
+**Milestone M6**: App adapts to phone/tablet/desktop with appropriate layouts
 
-### Phase 6: Polish & Testing (Days 21-25)
+### Phase 7: Polish & Testing (Days 25-30)
 
 **Agent A: Testing**
 - [ ] Write unit tests for all BLoCs
@@ -375,7 +440,7 @@ class MapCenterUpdated extends DestinationState {
 - [ ] Add app icon and splash screen
 - [ ] Performance profiling and optimization
 
-**Milestone M6**: All tests pass, app is production-ready
+**Milestone M7**: All tests pass, app is production-ready
 
 ---
 
@@ -383,7 +448,7 @@ class MapCenterUpdated extends DestinationState {
 
 ### Agent A Responsibilities
 - Domain layer (entities, use cases, repositories)
-- Data layer (models, datasources, repository implementations)
+- Data layer (models, datasources, repository implementations) — **Phase 2 first**
 - BLoC state management
 - Unit testing
 - API integrations
@@ -395,13 +460,18 @@ class MapCenterUpdated extends DestinationState {
 - Widget testing
 - Theme and styling
 
+### Phase Dependencies
+
+> **Critical:** Agent A must complete Phase 2 (Data Layer) before Agent B can start Phase 4 (Map UI with real geocoding). Agent B uses `MockGeocodingRepository` for UI prototyping in Phase 3.
+
 ### Sync Points
 
 | Sync | When | Purpose |
 |------|------|---------|
 | **M1 Review** | After Phase 1 | Verify architecture alignment |
-| **M3 Review** | After Phase 3 | Test BLoC ↔ UI integration |
-| **M5 Review** | After Phase 5 | Verify responsive layouts |
+| **M2 Review** | After Phase 2 | Verify data layer contracts, provide mocks to Agent B |
+| **M4 Review** | After Phase 4 | Test BLoC ↔ UI integration |
+| **M6 Review** | After Phase 6 | Verify responsive layouts |
 | **Daily** | End of each day | Merge conflicts, API contracts |
 
 ### Shared Contracts
@@ -421,6 +491,12 @@ abstract class DestinationRepository {
   Future<Either<Failure, List<Destination>>> getDestinations();
   Future<Either<Failure, void>> deleteDestination(String id);
 }
+
+// Geocoding Repository (Agent A implements in Phase 2, Agent B uses via DI)
+abstract class GeocodingRepository {
+  Future<Either<Failure, LatLng>> getCoordinatesFromAddress(String address);
+  Future<Either<Failure, String>> getAddressFromCoordinates(LatLng position);
+}
 ```
 
 ---
@@ -430,6 +506,7 @@ abstract class DestinationRepository {
 | Risk | Impact | Likelihood | Mitigation |
 |------|--------|------------|------------|
 | OpenStreetMap tile rate limits | High | Medium | Implement caching, use multiple tile providers |
+| Geocoding API rate limits (429) | High | Medium | LRU cache (24h TTL), debounce autocomplete (300ms), fallback to Mapbox |
 | Location permission denied | High | Low | Graceful fallback, show settings dialog, disable location features |
 | BLoC state complexity | Medium | High | Keep states simple, use `Equatable`, write tests first |
 | Responsive layout bugs | Medium | Medium | Test on real devices, use golden tests, define clear breakpoints |
@@ -458,7 +535,7 @@ abstract class DestinationRepository {
 - [ ] Performance targets met
 
 ### Project Completion
-- [ ] All 6 phases complete
+- [ ] All 7 phases complete
 - [ ] >80% test coverage
 - [ ] 60 FPS on target devices
 - [ ] App Store / Play Store ready
