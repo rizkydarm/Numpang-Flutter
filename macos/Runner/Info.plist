@@ -28,5 +28,9 @@
     <string>MainMenu</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>LSBackgroundOnly</key>
+    <false/>
+    <key>NSAppSleepDisabled</key>
+    <true/>
   </dict>
 </plist>
