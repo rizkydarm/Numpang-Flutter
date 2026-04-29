@@ -32,5 +32,9 @@
     <false/>
     <key>NSAppSleepDisabled</key>
     <true/>
+    <key>NSLocationUsageDescription</key>
+    <string>Numpang needs location access to show your position on the map.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Numpang needs location access to show your position on the map.</string>
   </dict>
 </plist>
