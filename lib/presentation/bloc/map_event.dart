@@ -1,17 +1,15 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../domain/entities/destination.dart';
 
-abstract class MapEvent extends Equatable {
-  const MapEvent();
+abstract class MapBlocEvent extends Equatable {
+  const MapBlocEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class InitializeMap extends MapEvent {
+class InitializeMap extends MapBlocEvent {
   final LatLng? initialCenter;
   final double initialZoom;
 
@@ -21,7 +19,7 @@ class InitializeMap extends MapEvent {
   List<Object?> get props => [initialCenter, initialZoom];
 }
 
-class CenterOnLocation extends MapEvent {
+class CenterOnLocation extends MapBlocEvent {
   final LatLng position;
   final double? zoom;
 
@@ -31,7 +29,7 @@ class CenterOnLocation extends MapEvent {
   List<Object?> get props => [position, zoom];
 }
 
-class TapOnMap extends MapEvent {
+class TapOnMap extends MapBlocEvent {
   final LatLng position;
   final String? address;
 
@@ -41,7 +39,7 @@ class TapOnMap extends MapEvent {
   List<Object?> get props => [position, address];
 }
 
-class AddMarker extends MapEvent {
+class AddMarker extends MapBlocEvent {
   final Destination destination;
 
   const AddMarker(this.destination);
@@ -50,7 +48,7 @@ class AddMarker extends MapEvent {
   List<Object?> get props => [destination];
 }
 
-class RemoveMarker extends MapEvent {
+class RemoveMarker extends MapBlocEvent {
   final String destinationId;
 
   const RemoveMarker(this.destinationId);
@@ -59,7 +57,7 @@ class RemoveMarker extends MapEvent {
   List<Object?> get props => [destinationId];
 }
 
-class UpdateZoom extends MapEvent {
+class UpdateZoom extends MapBlocEvent {
   final double zoom;
 
   const UpdateZoom(this.zoom);
@@ -68,11 +66,11 @@ class UpdateZoom extends MapEvent {
   List<Object?> get props => [zoom];
 }
 
-class ToggleFollowMode extends MapEvent {
+class ToggleFollowMode extends MapBlocEvent {
   const ToggleFollowMode();
 }
 
-class UserLocationUpdated extends MapEvent {
+class UserLocationUpdated extends MapBlocEvent {
   final LatLng position;
 
   const UserLocationUpdated(this.position);
@@ -81,7 +79,7 @@ class UserLocationUpdated extends MapEvent {
   List<Object?> get props => [position];
 }
 
-class MapMoved extends MapEvent {
+class MapMoved extends MapBlocEvent {
   final LatLng center;
   final double zoom;
 
@@ -90,3 +88,4 @@ class MapMoved extends MapEvent {
   @override
   List<Object?> get props => [center, zoom];
 }
+

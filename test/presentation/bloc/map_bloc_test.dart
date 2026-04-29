@@ -95,14 +95,13 @@ void main() {
 
   group('AddMarker', () {
     blocTest<MapBloc, MapState>(
-      'adds destination and marker to state',
+      'adds destination to state',
       build: () => mapBloc,
       seed: () => MapState.initial(),
       act: (bloc) => bloc.add(AddMarker(testDestination)),
       expect: () => [
         isA<MapState>()
             .having((s) => s.destinations.length, 'destinations count', 1)
-            .having((s) => s.markers.length, 'markers count', 1)
             .having((s) => s.destinations.first.id, 'destination id', '1'),
       ],
     );
@@ -122,11 +121,10 @@ void main() {
 
   group('RemoveMarker', () {
     blocTest<MapBloc, MapState>(
-      'removes destination and marker by id',
+      'removes destination by id',
       build: () => mapBloc,
       seed: () => MapState.initial().copyWith(
         destinations: [testDestination],
-        markers: [],
       ),
       act: (bloc) => bloc.add(const RemoveMarker('1')),
       expect: () => [
@@ -140,7 +138,6 @@ void main() {
       build: () => mapBloc,
       seed: () => MapState.initial().copyWith(
         destinations: [testDestination],
-        markers: [],
       ),
       act: (bloc) => bloc.add(const RemoveMarker('999')),
       expect: () => [],

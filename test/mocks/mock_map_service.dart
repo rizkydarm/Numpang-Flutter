@@ -29,13 +29,8 @@ class MockMapService implements MapService {
   }
 
   @override
-  void animateTo(LatLng position, double zoom, {Duration duration = const Duration(milliseconds: 500)}) {
-    _lastMovePosition = position;
-    _lastMoveZoom = zoom;
-  }
-
-  @override
   LatLng? get center => _lastMovePosition;
+
 
   @override
   double? get zoom => _lastMoveZoom;

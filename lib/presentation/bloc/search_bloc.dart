@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/errors/failures.dart';
+import 'package:latlong2/latlong.dart';
 import '../../domain/repositories/geocoding_repository.dart';
+
 import 'search_event.dart';
 import 'search_state.dart';
 
@@ -82,8 +83,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
     final result = await _geocodingRepository.searchAddress(event.query);
 
-    result.fold(
-      (failure) => emit(state.copyWith(
+    await result.fold(
+      (failure) async => emit(state.copyWith(
         isLoading: false,
         error: failure,
       )),
@@ -99,6 +100,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           (address) => emit(state.copyWith(
             isLoading: false,
             error: null,
+            resultPosition: position,
+            resultAddress: address,
           )),
         );
       },
@@ -115,6 +118,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       query: event.suggestion.name,
       suggestions: [],
       error: null,
+      resultPosition: LatLng(event.suggestion.latitude, event.suggestion.longitude),
+      resultAddress: event.suggestion.address,
     ));
   }
 

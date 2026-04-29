@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -19,14 +20,6 @@ class MapService {
 
   void moveTo(LatLng position, double zoom) {
     _controller?.move(position, zoom);
-  }
-
-  void animateTo(LatLng position, double zoom, {Duration duration = const Duration(milliseconds: 500)}) {
-    _controller?.animateTo(
-      dest: position,
-      zoom: zoom,
-      curve: Curves.easeInOut,
-    );
   }
 
   LatLng? get center => _controller?.camera.center;
@@ -64,7 +57,7 @@ class MapService {
     _controller?.fitCamera(
       CameraFit.bounds(
         bounds: bounds,
-        padding: EdgeInsets.all(50),
+        padding: const EdgeInsets.all(50),
       ),
     );
   }
@@ -101,7 +94,7 @@ class MapService {
           border: Border.all(color: Colors.white, width: 3),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF2196F3).withValues(alpha: 0.4),
+              color: const Color(0xFF2196F3).withAlpha(102),
               blurRadius: 8,
               spreadRadius: 2,
             ),
@@ -115,6 +108,6 @@ class MapService {
     const double earthCircumference = 40075016.686;
     const double tileSize = 256;
     final double scale = radiusInMeters * 4 / earthCircumference;
-    return (earthCircumference * tileSize / scale).log() / 2.log();
+    return math.log(earthCircumference * tileSize / scale) / math.log(2);
   }
 }

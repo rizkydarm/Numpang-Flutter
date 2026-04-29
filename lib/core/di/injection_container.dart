@@ -5,7 +5,7 @@ import 'package:numpang_app/flavors.dart';
 import 'package:provider/provider.dart';
 import '../../presentation/bloc/map_bloc.dart';
 import '../../presentation/bloc/search_bloc.dart';
-import '../services/location_service.dart';
+import '../../data/repositories/location_repository_impl.dart';
 import '../../data/datasources/destination_local_datasource.dart';
 import '../../data/datasources/destination_remote_datasource.dart';
 import '../../data/datasources/geocoding_cache.dart';
@@ -13,8 +13,8 @@ import '../../data/repositories/destination_repository_impl.dart';
 import '../../data/repositories/geocoding_repository_impl.dart';
 import '../../domain/repositories/destination_repository.dart';
 import '../../domain/repositories/geocoding_repository.dart';
-import '../services/location_service.dart';
 import '../utils/dio_client.dart';
+
 
 class InjectionContainer extends StatelessWidget {
   final Widget child;
