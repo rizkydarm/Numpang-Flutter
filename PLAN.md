@@ -19,6 +19,14 @@ Numpang is a Flutter-based multi-platform navigation app with Clean Architecture
 - ✅ Geocoding API integration complete with fallback (Nominatim → Mapbox)
 - ✅ Rate-limit handling with client-side caching (LRU, 24h TTL)
 
+### Platform Requirements
+
+| Platform | Minimum Version | Note |
+|----------|-----------------|------|
+| Android  | Android 11 (API 30) | Required for modern location APIs |
+| iOS      | iOS 16.0+       | Required for Liquid Glass components |
+| macOS    | macOS 15.0+     | Required for specialized desktop features |
+
 ---
 
 ## 2. User Experience & Functionality
