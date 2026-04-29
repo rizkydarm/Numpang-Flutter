@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_apple/geolocator_apple.dart';
 import '../../domain/entities/user_location.dart';
 
 enum LocationPermissionStatus {
@@ -13,7 +15,7 @@ class LocationService {
   final GeolocatorPlatform _geolocator;
 
   LocationService({GeolocatorPlatform? geolocator})
-    : _geolocator = geolocator ?? GeolocatorPlatform.instance;
+      : _geolocator = geolocator ?? GeolocatorPlatform.instance;
 
   Future<LocationPermissionStatus> checkPermission() async {
     final serviceEnabled = await _geolocator.isLocationServiceEnabled();
@@ -40,6 +42,22 @@ class LocationService {
     return LocationPermissionStatus.granted;
   }
 
+  LocationSettings _getLocationSettings({LocationAccuracy accuracy = LocationAccuracy.high}) {
+    if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+      return AppleSettings(
+        accuracy: accuracy,
+        activityType: ActivityType.other,
+        distanceFilter: 10,
+        pauseLocationUpdatesAutomatically: false,
+        showBackgroundLocationIndicator: false,
+      );
+    }
+    return LocationSettings(
+      accuracy: accuracy,
+      distanceFilter: 10,
+    );
+  }
+
   Future<UserLocation?> getCurrentLocation() async {
     final permission = await checkPermission();
     if (permission != LocationPermissionStatus.granted) {
@@ -48,7 +66,7 @@ class LocationService {
 
     try {
       final position = await _geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: _getLocationSettings(),
       );
 
       return UserLocation(

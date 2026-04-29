@@ -46,5 +46,15 @@ class MockLocationService implements LocationService {
 
   void dispose() {
     _locationStreamController.close();
+  Stream<UserLocation> getLocationStream() {
+    return Stream.periodic(
+      const Duration(seconds: 5),
+      (_) => UserLocation(
+        latitude: 40.7128 + (DateTime.now().millisecond % 100) / 10000,
+        longitude: -74.0060 + (DateTime.now().millisecond % 100) / 10000,
+        accuracy: 10.0,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 }
