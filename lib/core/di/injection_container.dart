@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numpang_app/flavors.dart';
 import 'package:provider/provider.dart';
+import '../../presentation/bloc/map_bloc.dart';
+import '../../presentation/bloc/search_bloc.dart';
+import '../services/location_service.dart';
 import '../../data/datasources/destination_local_datasource.dart';
 import '../../data/datasources/destination_remote_datasource.dart';
 import '../../data/datasources/geocoding_cache.dart';
@@ -45,7 +49,18 @@ class InjectionContainer extends StatelessWidget {
         Provider<DestinationRepository>.value(value: destinationRepository),
         Provider<LocationService>.value(value: locationService),
       ],
-      child: child,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => MapBloc(locationService: locationService),
+          ),
+          BlocProvider(
+            create: (context) =>
+                SearchBloc(geocodingRepository: context.read()),
+          ),
+        ],
+        child: child,
+      ),
     );
   }
 }

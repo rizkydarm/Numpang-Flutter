@@ -87,7 +87,10 @@ class LocationService {
     }
 
     await for (final position in _geolocator.getPositionStream(
-      locationSettings: _getLocationSettings(accuracy: LocationAccuracy.best),
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 10,
+      ),
     )) {
       yield UserLocation(
         latitude: position.latitude,

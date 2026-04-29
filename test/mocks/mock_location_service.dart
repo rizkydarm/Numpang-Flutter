@@ -3,16 +3,31 @@ import 'package:numpang_app/core/services/location_service.dart';
 import 'package:numpang_app/domain/entities/user_location.dart';
 
 class MockLocationService implements LocationService {
-  final UserLocation _mockLocation = UserLocation(
+  LocationPermissionStatus _permissionStatus = LocationPermissionStatus.granted;
+  UserLocation? _mockLocation = UserLocation(
     latitude: 40.7128,
     longitude: -74.0060,
     accuracy: 10.0,
     timestamp: DateTime.now(),
   );
 
+  final StreamController<UserLocation> _locationStreamController = StreamController<UserLocation>.broadcast();
+
+  void setPermissionStatus(LocationPermissionStatus status) {
+    _permissionStatus = status;
+  }
+
+  void setMockLocation(UserLocation? location) {
+    _mockLocation = location;
+  }
+
+  void emitLocation(UserLocation location) {
+    _locationStreamController.add(location);
+  }
+
   @override
   Future<LocationPermissionStatus> checkPermission() async {
-    return LocationPermissionStatus.granted;
+    return _permissionStatus;
   }
 
   @override
@@ -22,6 +37,15 @@ class MockLocationService implements LocationService {
   }
 
   @override
+  Stream<UserLocation> getLocationStream() async* {
+    if (_permissionStatus != LocationPermissionStatus.granted) {
+      throw Exception('Location permission not granted');
+    }
+    yield* _locationStreamController.stream;
+  }
+
+  void dispose() {
+    _locationStreamController.close();
   Stream<UserLocation> getLocationStream() {
     return Stream.periodic(
       const Duration(seconds: 5),

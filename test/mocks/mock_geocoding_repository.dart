@@ -22,22 +22,41 @@ class MockGeocodingRepository implements GeocodingRepository {
     ),
   ];
 
+  bool shouldFail = false;
+  Failure? failureToReturn;
+
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {
     await Future.delayed(const Duration(milliseconds: 100));
+    if (shouldFail) {
+      return Left(failureToReturn ?? const ServerFailure(message: 'Mock error'));
+    }
     return const Right(LatLng(40.7128, -74.0060));
   }
 
   @override
   Future<Either<Failure, String>> reverseGeocode(LatLng position) async {
     await Future.delayed(const Duration(milliseconds: 100));
+    if (shouldFail) {
+      return Left(failureToReturn ?? const ServerFailure(message: 'Mock error'));
+    }
     return const Right('Mock Address, New York, NY, USA');
   }
 
   @override
   Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(String input) async {
     await Future.delayed(const Duration(milliseconds: 100));
+    if (shouldFail) {
+      return Left(failureToReturn ?? const ServerFailure(message: 'Mock error'));
+    }
     if (input.isEmpty) return const Right([]);
-    return Right(_mockSuggestions);
+    return Right(_mockSuggestions
+        .where((s) => s.name.toLowerCase().contains(input.toLowerCase()))
+        .toList());
+  }
+
+  void reset() {
+    shouldFail = false;
+    failureToReturn = null;
   }
 }
