@@ -324,22 +324,22 @@ MAPBOX_API_KEY=your_key_here
 
 > **Agent A only – no UI work until Phase 3**
 
-- [ ] Create `GeocodingRepository` interface
-- [ ] Implement `NominatimGeocodingRepository` with Dio + caching
-- [ ] Implement fallback to Mapbox (configurable via `.env`)
-- [ ] Create `LocationService` (permission handling, stream of user location)
-- [ ] Implement `DestinationLocalDataSource` (in-memory with Hive/VMO for persistence)
-- [ ] Implement `DestinationRemoteDataSource` (save/load from local – cloud out of scope)
-- [ ] Create `DestinationModel` with JSON serialization
-- [ ] Implement `DestinationRepositoryImpl`
-- [ ] Add LRU cache for reverse geocoding (24h TTL)
-- [ ] Add debounce for autocomplete (300ms)
-- [ ] Write unit tests for all repository methods (>=90% coverage)
-- [ ] Provide mock implementations for Agent B to use during UI development
+- [x] Create `GeocodingRepository` interface
+- [x] Implement `NominatimGeocodingRepository` with Dio + caching
+- [x] Implement fallback to Mapbox (configurable via `.env`)
+- [x] Create `LocationService` (permission handling, stream of user location)
+- [x] Implement `DestinationLocalDataSource` (in-memory with Hive/VMO for persistence)
+- [x] Implement `DestinationRemoteDataSource` (save/load from local – cloud out of scope)
+- [x] Create `DestinationModel` with JSON serialization
+- [x] Implement `DestinationRepositoryImpl`
+- [x] Add LRU cache for reverse geocoding (24h TTL)
+- [x] Add debounce for autocomplete (300ms)
+- [x] Write unit tests for all repository methods (>=90% coverage)
+- [x] Provide mock implementations for Agent B to use during UI development
 
 **Testing Strategy:**
-- Unit tests for API response parsing (mock HTTP client)
-- Error simulation: 429 rate limit, 500 server error → verify `Either<Failure, T>` handling
+- [x] Unit tests for API response parsing (mock HTTP client)
+- [x] Error simulation: 429 rate limit, 500 server error → verify `Either<Failure, T>` handling
 
 **Milestone M2**: All data layer tests pass, geocoding works with real API
 

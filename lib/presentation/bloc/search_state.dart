@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:latlong2/latlong.dart';
 import '../../core/errors/failures.dart';
 import '../../domain/entities/place_suggestion.dart';
 
@@ -8,6 +9,8 @@ class SearchState extends Equatable {
   final bool isLoading;
   final Failure? error;
   final PlaceSuggestion? selectedSuggestion;
+  final LatLng? resultPosition;
+  final String? resultAddress;
 
   const SearchState({
     this.query = '',
@@ -15,6 +18,8 @@ class SearchState extends Equatable {
     this.isLoading = false,
     this.error,
     this.selectedSuggestion,
+    this.resultPosition,
+    this.resultAddress,
   });
 
   factory SearchState.initial() {
@@ -27,6 +32,8 @@ class SearchState extends Equatable {
     bool? isLoading,
     Failure? error,
     PlaceSuggestion? selectedSuggestion,
+    LatLng? resultPosition,
+    String? resultAddress,
     bool clearSelected = false,
   }) {
     return SearchState(
@@ -36,6 +43,8 @@ class SearchState extends Equatable {
       error: error,
       selectedSuggestion:
           clearSelected ? null : (selectedSuggestion ?? this.selectedSuggestion),
+      resultPosition: resultPosition ?? this.resultPosition,
+      resultAddress: resultAddress ?? this.resultAddress,
     );
   }
 
@@ -46,5 +55,7 @@ class SearchState extends Equatable {
         isLoading,
         error,
         selectedSuggestion,
+        resultPosition,
+        resultAddress,
       ];
 }

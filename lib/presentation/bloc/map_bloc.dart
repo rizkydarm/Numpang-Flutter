@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/services/location_service.dart';
-import '../../domain/entities/destination.dart';
+import 'package:stream_transform/stream_transform.dart';
+import '../../domain/entities/user_location.dart';
+import '../../../data/repositories/location_repository_impl.dart';
 import 'map_event.dart';
 import 'map_state.dart';
 
-class MapBloc extends Bloc<MapEvent, MapState> {
+class MapBloc extends Bloc<MapBlocEvent, MapState> {
   final LocationService _locationService;
+  StreamSubscription<UserLocation>? _locationSubscription;
 
   MapBloc({required LocationService locationService})
     : _locationService = locationService,
@@ -22,6 +23,12 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<ToggleFollowMode>(_onToggleFollowMode);
     on<UserLocationUpdated>(_onUserLocationUpdated);
     on<MapMoved>(_onMapMoved);
+  }
+
+  @override
+  Future<void> close() {
+    _locationSubscription?.cancel();
+    return super.close();
   }
 
   Future<void> _onInitializeMap(
@@ -40,10 +47,22 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         center: center,
         zoom: event.initialZoom,
         destinations: [],
-        markers: [],
         isFollowingUser: location != null,
         isLoading: false,
       ),
+    );
+
+    // Start listening to location updates
+    _locationSubscription = _locationService.getLocationStream().listen(
+      (userLocation) {
+        add(UserLocationUpdated(
+          LatLng(userLocation.latitude, userLocation.longitude),
+        ));
+      },
+      onError: (error) {
+        // Handle location errors (permission denied, etc.)
+        // For now, we'll just ignore them to keep the map functional
+      },
     );
   }
 
@@ -54,40 +73,29 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   void _onTapOnMap(TapOnMap event, Emitter<MapState> emit) {
-    // Just update center - marker is added via AddMarker event
     emit(state.copyWith(center: event.position));
   }
 
   void _onAddMarker(AddMarker event, Emitter<MapState> emit) {
     final newDestination = event.destination;
     final updatedDestinations = [...state.destinations, newDestination];
-    final newMarker = _createMarker(newDestination);
-    final updatedMarkers = [...state.markers, newMarker];
 
     emit(
       state.copyWith(
         destinations: updatedDestinations,
-        markers: updatedMarkers,
         center: LatLng(newDestination.latitude, newDestination.longitude),
       ),
     );
   }
 
   void _onRemoveMarker(RemoveMarker event, Emitter<MapState> emit) {
-    final index = state.destinations.indexWhere(
-      (d) => d.id == event.destinationId,
-    );
-    if (index < 0) return;
+    final updatedDestinations = state.destinations
+        .where((d) => d.id != event.destinationId)
+        .toList();
 
-    final updatedDestinations = [...state.destinations]..removeAt(index);
-    final updatedMarkers = [...state.markers]..removeAt(index);
+    if (updatedDestinations.length == state.destinations.length) return;
 
-    emit(
-      state.copyWith(
-        destinations: updatedDestinations,
-        markers: updatedMarkers,
-      ),
-    );
+    emit(state.copyWith(destinations: updatedDestinations));
   }
 
   void _onUpdateZoom(UpdateZoom event, Emitter<MapState> emit) {
@@ -109,14 +117,5 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onMapMoved(MapMoved event, Emitter<MapState> emit) {
     emit(state.copyWith(center: event.center, zoom: event.zoom));
-  }
-
-  Marker _createMarker(Destination destination) {
-    return Marker(
-      point: LatLng(destination.latitude, destination.longitude),
-      width: 40,
-      height: 40,
-      child: Icon(Icons.location_pin, color: const Color(0xFFFFCA28), size: 40),
-    );
   }
 }

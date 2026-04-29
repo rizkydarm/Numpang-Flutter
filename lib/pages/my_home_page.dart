@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../flavors.dart';
+import '../presentation/screens/map/map_screen.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -8,7 +9,7 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(F.title)),
-      body: Center(child: Text('Hello ${F.title}')),
+      body: const MapScreen(),
     );
   }
 }

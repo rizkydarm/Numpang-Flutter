@@ -29,7 +29,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {
     if (_primaryProvider == GeocodingProvider.mapbox && _mapboxRepo != null) {
-      final result = await _mapboxRepo!.searchAddress(query);
+      final result = await _mapboxRepo.searchAddress(query);
       if (result.isRight()) return result;
     }
 
@@ -37,7 +37,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo!.searchAddress(query);
+      return await _mapboxRepo.searchAddress(query);
     }
 
     return nominatimResult;
@@ -46,7 +46,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
   @override
   Future<Either<Failure, String>> reverseGeocode(LatLng position) async {
     if (_primaryProvider == GeocodingProvider.mapbox && _mapboxRepo != null) {
-      final result = await _mapboxRepo!.reverseGeocode(position);
+      final result = await _mapboxRepo.reverseGeocode(position);
       if (result.isRight()) return result;
     }
 
@@ -54,7 +54,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo!.reverseGeocode(position);
+      return await _mapboxRepo.reverseGeocode(position);
     }
 
     return nominatimResult;
@@ -63,7 +63,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
   @override
   Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(String input) async {
     if (_primaryProvider == GeocodingProvider.mapbox && _mapboxRepo != null) {
-      final result = await _mapboxRepo!.autocomplete(input);
+      final result = await _mapboxRepo.autocomplete(input);
       if (result.isRight()) return result;
     }
 
@@ -71,7 +71,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo!.autocomplete(input);
+      return await _mapboxRepo.autocomplete(input);
     }
 
     return nominatimResult;

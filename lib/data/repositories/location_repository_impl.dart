@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geolocator_apple/geolocator_apple.dart';
+
 import '../../domain/entities/user_location.dart';
 
 enum LocationPermissionStatus {
@@ -73,7 +73,7 @@ class LocationService {
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
-        timestamp: position.timestamp ?? DateTime.now(),
+        timestamp: position.timestamp,
       );
     } catch (e) {
       return null;
@@ -96,7 +96,7 @@ class LocationService {
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
-        timestamp: position.timestamp ?? DateTime.now(),
+        timestamp: position.timestamp,
       );
     }
   }
