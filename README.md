@@ -226,11 +226,11 @@ flutter test test/widgets/
 
 ## 📱 Platform Support
 
-| Platform | Status | Notes |
-|----------|--------|-------|
-| Android | ✅ Stable | API 21+ |
-| iOS | ✅ Stable | iOS 12.0+ |
-| macOS | ✅ Stable | macOS 10.15+ |
+| Platform | Status | Minimum Version |
+|----------|--------|-----------------|
+| Android | ✅ Stable | API 30 (Android 11) |
+| iOS | ✅ Stable | iOS 16.0+ |
+| macOS | ✅ Stable | macOS 15.0+ |
 | Tablet | ✅ Optimized | Landscape support |
 | Desktop | ✅ Optimized | Keyboard shortcuts |
 

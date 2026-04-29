@@ -116,11 +116,11 @@ GEOCODE_XYZ_API_KEY=your_key_here
 
 ## Platform Support
 
-| Platform | Target | Notes |
-|----------|--------|-------|
-| Android | `--flavor dev/prod` | API 21+ |
-| iOS | `--flavor dev/prod` | iOS 12+ |
-| macOS | `-d macos --flavor` | 10.15+ |
+| Platform | Target | Minimum Version |
+|----------|--------|-----------------|
+| Android | `--flavor dev/prod` | API 30 (Android 11) |
+| iOS | `--flavor dev/prod` | iOS 16.0+ |
+| macOS | `-d macos --flavor` | macOS 15.0+ |
 
 ### Bundle ID Organization
 
