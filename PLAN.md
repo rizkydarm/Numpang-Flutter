@@ -291,24 +291,24 @@ MAPBOX_API_KEY=your_key_here
 ### Phase 1: Foundation (Days 1-3)
 
 **Agent A: Core Setup**
-- [ ] Initialize Flutter project with flavors (dev/prod)
-- [ ] Configure `.env` setup with `flutter_dotenv`
-- [ ] Setup folder structure (Clean Architecture)
-- [ ] Configure Provider for DI
-- [ ] Setup BLoC infrastructure
-- [ ] Create base theme with Amber colors
-- [ ] Configure Android/iOS/macOS platform files
-- [ ] Add location permissions to all platforms
+- [x] Initialize Flutter project with flavors (dev/prod)
+- [x] Configure `.env` setup with `flutter_dotenv`
+- [x] Setup folder structure (Clean Architecture)
+- [x] Configure Provider for DI
+- [x] Setup BLoC infrastructure
+- [x] Create base theme with Amber colors
+- [x] Configure Android/iOS/macOS platform files
+- [x] Add location permissions to all platforms
 
 **Agent B: Domain Layer**
-- [ ] Create `Destination` entity
-- [ ] Create `UserLocation` entity
-- [ ] Define `DestinationRepository` interface
-- [ ] Create `AddDestinationUseCase`
-- [ ] Create `GetDestinationsUseCase`
-- [ ] Create `DeleteDestinationUseCase`
-- [ ] Create `Failure` classes (domain/errors/)
-- [ ] Write unit tests for all use cases
+- [x] Create `Destination` entity
+- [x] Create `UserLocation` entity
+- [x] Define `DestinationRepository` interface
+- [x] Create `AddDestinationUseCase`
+- [x] Create `GetDestinationsUseCase`
+- [x] Create `DeleteDestinationUseCase`
+- [x] Create `Failure` classes (domain/errors/)
+- [x] Write unit tests for all use cases
 
 **Milestone M1**: Project builds successfully on all 3 platforms with flavors
 
