@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'text_themes.dart';
 
 class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      textTheme: AppTextThemes.darkTextTheme,
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFFFFCA28),
         onPrimary: Color(0xFF705600),
@@ -37,6 +39,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      textTheme: AppTextThemes.lightTextTheme,
       colorScheme: const ColorScheme.light(
         primary: Color(0xFFFFCA28),
         onPrimary: Color(0xFF705600),
