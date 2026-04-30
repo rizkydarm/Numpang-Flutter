@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:stream_transform/stream_transform.dart';
+import '../../core/errors/failures.dart';
 import '../../core/services/map_service.dart';
 import '../../domain/entities/user_location.dart';
 import '../../../data/repositories/location_repository_impl.dart';
@@ -27,6 +27,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
     on<RemoveMarker>(_onRemoveMarker);
     on<UpdateZoom>(_onUpdateZoom);
     on<ToggleFollowMode>(_onToggleFollowMode);
+    on<RequestMyLocation>(_onRequestMyLocation);
     on<UserLocationUpdated>(_onUserLocationUpdated);
     on<MapMoved>(_onMapMoved);
   }
@@ -111,6 +112,34 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
 
   void _onToggleFollowMode(ToggleFollowMode event, Emitter<MapState> emit) {
     emit(state.copyWith(isFollowingUser: !state.isFollowingUser));
+  }
+
+  Future<void> _onRequestMyLocation(
+    RequestMyLocation event,
+    Emitter<MapState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    final location = await _locationService.getCurrentLocation();
+
+    if (location != null) {
+      final position = LatLng(location.latitude, location.longitude);
+      _mapService.moveTo(position, state.zoom);
+      emit(
+        state.copyWith(
+          center: position,
+          isFollowingUser: true,
+          isLoading: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: const PermissionFailure(message: 'Location permission denied'),
+        ),
+      );
+    }
   }
 
   void _onUserLocationUpdated(

@@ -15,7 +15,7 @@ class LocationService {
   final GeolocatorPlatform _geolocator;
 
   LocationService({GeolocatorPlatform? geolocator})
-      : _geolocator = geolocator ?? GeolocatorPlatform.instance;
+    : _geolocator = geolocator ?? GeolocatorPlatform.instance;
 
   Future<LocationPermissionStatus> checkPermission() async {
     final serviceEnabled = await _geolocator.isLocationServiceEnabled();
@@ -42,8 +42,11 @@ class LocationService {
     return LocationPermissionStatus.granted;
   }
 
-  LocationSettings _getLocationSettings({LocationAccuracy accuracy = LocationAccuracy.high}) {
-    if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS) {
+  LocationSettings _getLocationSettings({
+    LocationAccuracy accuracy = LocationAccuracy.high,
+  }) {
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
       return AppleSettings(
         accuracy: accuracy,
         activityType: ActivityType.other,
@@ -52,10 +55,7 @@ class LocationService {
         showBackgroundLocationIndicator: false,
       );
     }
-    return LocationSettings(
-      accuracy: accuracy,
-      distanceFilter: 10,
-    );
+    return LocationSettings(accuracy: accuracy, distanceFilter: 10);
   }
 
   Future<UserLocation?> getCurrentLocation() async {
@@ -87,10 +87,7 @@ class LocationService {
     }
 
     await for (final position in _geolocator.getPositionStream(
-      locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.best,
-        distanceFilter: 10,
-      ),
+      locationSettings: _getLocationSettings(accuracy: LocationAccuracy.best),
     )) {
       yield UserLocation(
         latitude: position.latitude,

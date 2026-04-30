@@ -43,86 +43,97 @@ class _MapScreenState extends State<MapScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return BlocBuilder<MapBloc, MapState>(
-      builder: (context, state) {
-        return Stack(
-          children: [
-            FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                initialCenter: state.center,
-                initialZoom: state.zoom,
-                onTap: (tapPosition, point) {
-                  // Handle map tap to add destination
-                  context.read<MapBloc>().add(TapOnMap(point, address: null));
-                },
-                onPositionChanged: (position, hasGesture) {
-                  if (hasGesture) {
-                    context.read<MapBloc>().add(
-                      MapMoved(position.center, position.zoom),
-                    );
-                  }
-                },
-                // Disable interaction when following user
-                // interactionOptions: InteractionOptions(
-                //   flags: !state.isFollowingUser
-                //       ? InteractiveFlag.all
-                //       : InteractiveFlag.none,
-                // ),
+    return BlocListener<MapBloc, MapState>(
+      listenWhen: (previous, current) => previous.error != current.error,
+      listener: (context, state) {
+        if (state.error != null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error!.message)));
+        }
+      },
+      child: BlocBuilder<MapBloc, MapState>(
+        builder: (context, state) {
+          return Stack(
+            children: [
+              FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: state.center,
+                  initialZoom: state.zoom,
+                  onTap: (tapPosition, point) {
+                    // Handle map tap to add destination
+                    // context.read<MapBloc>().add(TapOnMap(point, address: null));
+                  },
+                  onPositionChanged: (position, hasGesture) {
+                    if (hasGesture) {
+                      // context.read<MapBloc>().add(
+                      //   MapMoved(position.center, position.zoom),
+                      // );
+                    }
+                  },
+                  // Disable interaction when following user
+                  // interactionOptions: InteractionOptions(
+                  //   flags: !state.isFollowingUser
+                  //       ? InteractiveFlag.all
+                  //       : InteractiveFlag.none,
+                  // ),
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.rizkyeky.numpang',
+                    maxZoom: 19,
+                    minZoom: 0,
+                    tileDisplay: const TileDisplay.fadeIn(),
+                    errorTileCallback: (tile, error, stackTrace) {
+                      debugPrint('Tile error at ${tile.coordinates}: $error');
+                    },
+                  ),
+                  // Destination markers
+                  MarkerLayer(
+                    markers: _buildDestinationMarkers(
+                      context,
+                      state.destinations,
+                    ),
+                  ),
+                  // User location marker
+                  if (state.isFollowingUser)
+                    MarkerLayer(
+                      markers: [UserLocationMarker(point: state.center)],
+                    ),
+                  RichAttributionWidget(
+                    attributions: [
+                      TextSourceAttribution(
+                        'OpenStreetMap contributors',
+                        onTap: () => launchUrl(
+                          Uri.parse('https://www.openstreetmap.org/copyright'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.rizkyeky.numpang',
-                  maxZoom: 19,
-                  minZoom: 0,
-                  tileDisplay: const TileDisplay.fadeIn(),
-                  errorTileCallback: (tile, error, stackTrace) {
-                    debugPrint('Tile error at ${tile.coordinates}: $error');
+              // My Location FAB
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: FloatingActionButton(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  mini: true,
+                  child: const Icon(Icons.my_location),
+                  onPressed: () {
+                    // Center on my location
+                    context.read<MapBloc>().add(const RequestMyLocation());
                   },
                 ),
-                // Destination markers
-                MarkerLayer(
-                  markers: _buildDestinationMarkers(
-                    context,
-                    state.destinations,
-                  ),
-                ),
-                // User location marker
-                if (state.isFollowingUser)
-                  MarkerLayer(
-                    markers: [UserLocationMarker(point: state.center)],
-                  ),
-                RichAttributionWidget(
-                  attributions: [
-                    TextSourceAttribution(
-                      'OpenStreetMap contributors',
-                      onTap: () => launchUrl(
-                        Uri.parse('https://www.openstreetmap.org/copyright'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            // Crosshair FAB for recenter
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: FloatingActionButton(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                mini: true,
-                child: const Icon(Icons.center_focus_strong),
-                onPressed: () {
-                  // Recenter on user location
-                  context.read<MapBloc>().add(const ToggleFollowMode());
-                },
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 

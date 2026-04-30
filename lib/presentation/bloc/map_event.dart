@@ -70,6 +70,10 @@ class ToggleFollowMode extends MapBlocEvent {
   const ToggleFollowMode();
 }
 
+class RequestMyLocation extends MapBlocEvent {
+  const RequestMyLocation();
+}
+
 class UserLocationUpdated extends MapBlocEvent {
   final LatLng position;
 
@@ -88,4 +92,3 @@ class MapMoved extends MapBlocEvent {
   @override
   List<Object?> get props => [center, zoom];
 }
-
