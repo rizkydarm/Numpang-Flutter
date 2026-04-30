@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/errors/failures.dart';
 import '../../core/services/map_service.dart';
+import '../../domain/entities/destination.dart';
 import '../../domain/entities/user_location.dart';
 import '../../../data/repositories/location_repository_impl.dart';
 import 'map_event.dart';
@@ -81,7 +82,23 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
   }
 
   void _onTapOnMap(TapOnMap event, Emitter<MapState> emit) {
-    emit(state.copyWith(center: event.position));
+    // Create destination from tap position
+    final destination = Destination(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: event.address ?? 'Pinned Location',
+      address:
+          event.address ??
+          '${event.position.latitude.toStringAsFixed(4)}, ${event.position.longitude.toStringAsFixed(4)}',
+      latitude: event.position.latitude,
+      longitude: event.position.longitude,
+      createdAt: DateTime.now(),
+    );
+
+    final updatedDestinations = [...state.destinations, destination];
+
+    emit(
+      state.copyWith(destinations: updatedDestinations),
+    );
   }
 
   void _onAddMarker(AddMarker event, Emitter<MapState> emit) {
@@ -91,7 +108,6 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
     emit(
       state.copyWith(
         destinations: updatedDestinations,
-        center: LatLng(newDestination.latitude, newDestination.longitude),
       ),
     );
   }

@@ -66,11 +66,11 @@ class _MapScreenState extends State<MapScreen> {
                     context.read<MapBloc>().add(TapOnMap(point, address: null));
                   },
                   onPositionChanged: (position, hasGesture) {
-                    if (hasGesture) {
-                      context.read<MapBloc>().add(
-                        MapMoved(position.center, position.zoom),
-                      );
-                    }
+                    // if (hasGesture) {
+                    //   context.read<MapBloc>().add(
+                    //     MapMoved(position.center, position.zoom),
+                    //   );
+                    // }
                   },
                   // Disable interaction when following user
                   // interactionOptions: InteractionOptions(
@@ -93,10 +93,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   // Destination markers
                   MarkerLayer(
-                    markers: _buildDestinationMarkers(
-                      context,
-                      state.destinations,
-                    ),
+                    markers: _buildDestinationMarkers(context, state.destinations),
                   ),
                   // User location marker
                   if (state.isFollowingUser)
@@ -152,7 +149,7 @@ class _MapScreenState extends State<MapScreen> {
         child: GestureDetector(
           onTap: () {
             // Show add destination dialog
-            _showAddDestinationDialog(context, destination);
+            // _showAddDestinationDialog(context, destination);
           },
           child: Icon(
             Icons.location_pin,
