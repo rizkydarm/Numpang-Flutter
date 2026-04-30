@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_transform/stream_transform.dart';
+import '../../core/services/map_service.dart';
 import '../../domain/entities/user_location.dart';
 import '../../../data/repositories/location_repository_impl.dart';
 import 'map_event.dart';
@@ -9,10 +11,14 @@ import 'map_state.dart';
 
 class MapBloc extends Bloc<MapBlocEvent, MapState> {
   final LocationService _locationService;
+  final MapService _mapService;
   StreamSubscription<UserLocation>? _locationSubscription;
 
-  MapBloc({required LocationService locationService})
+  MapService get mapService => _mapService;
+
+  MapBloc({required LocationService locationService, MapService? mapService})
     : _locationService = locationService,
+      _mapService = mapService ?? MapService(),
       super(MapState.initial()) {
     on<InitializeMap>(_onInitializeMap);
     on<CenterOnLocation>(_onCenterOnLocation);
@@ -55,21 +61,22 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
     // Start listening to location updates
     _locationSubscription = _locationService.getLocationStream().listen(
       (userLocation) {
-        add(UserLocationUpdated(
-          LatLng(userLocation.latitude, userLocation.longitude),
-        ));
+        add(
+          UserLocationUpdated(
+            LatLng(userLocation.latitude, userLocation.longitude),
+          ),
+        );
       },
       onError: (error) {
-        // Handle location errors (permission denied, etc.)
-        // For now, we'll just ignore them to keep the map functional
+        debugPrint('Location stream error: $error');
       },
     );
   }
 
   void _onCenterOnLocation(CenterOnLocation event, Emitter<MapState> emit) {
-    emit(
-      state.copyWith(center: event.position, zoom: event.zoom ?? state.zoom),
-    );
+    final zoom = event.zoom ?? state.zoom;
+    _mapService.moveTo(event.position, zoom);
+    emit(state.copyWith(center: event.position, zoom: zoom));
   }
 
   void _onTapOnMap(TapOnMap event, Emitter<MapState> emit) {
@@ -111,6 +118,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
     Emitter<MapState> emit,
   ) {
     if (state.isFollowingUser) {
+      _mapService.moveTo(event.position, state.zoom);
       emit(state.copyWith(center: event.position));
     }
   }
