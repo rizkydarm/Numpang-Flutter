@@ -63,13 +63,13 @@ class _MapScreenState extends State<MapScreen> {
                   initialZoom: state.zoom,
                   onTap: (tapPosition, point) {
                     // Handle map tap to add destination
-                    // context.read<MapBloc>().add(TapOnMap(point, address: null));
+                    context.read<MapBloc>().add(TapOnMap(point, address: null));
                   },
                   onPositionChanged: (position, hasGesture) {
                     if (hasGesture) {
-                      // context.read<MapBloc>().add(
-                      //   MapMoved(position.center, position.zoom),
-                      // );
+                      context.read<MapBloc>().add(
+                        MapMoved(position.center, position.zoom),
+                      );
                     }
                   },
                   // Disable interaction when following user
