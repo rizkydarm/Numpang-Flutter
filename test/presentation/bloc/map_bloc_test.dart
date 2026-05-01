@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:numpang_app/core/services/location_service.dart';
+import 'package:numpang_app/data/repositories/location_repository_impl.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
 import 'package:numpang_app/domain/entities/user_location.dart';
 import 'package:numpang_app/presentation/bloc/map_bloc.dart';
@@ -46,8 +46,12 @@ void main() {
     blocTest<MapBloc, MapState>(
       'emits MapState with user location when available',
       build: () {
-        when(mockLocationService.getCurrentLocation())
-            .thenAnswer((_) async => testLocation);
+        when(
+          mockLocationService.getCurrentLocation(),
+        ).thenAnswer((_) async => testLocation);
+        when(
+          mockLocationService.getLocationStream(),
+        ).thenAnswer((_) => Stream.empty());
         return mapBloc;
       },
       act: (bloc) => bloc.add(const InitializeMap()),
@@ -64,11 +68,16 @@ void main() {
     blocTest<MapBloc, MapState>(
       'emits MapState with default center when location unavailable',
       build: () {
-        when(mockLocationService.getCurrentLocation())
-            .thenAnswer((_) async => null);
+        when(
+          mockLocationService.getCurrentLocation(),
+        ).thenAnswer((_) async => null);
+        when(
+          mockLocationService.getLocationStream(),
+        ).thenAnswer((_) => Stream.empty());
         return mapBloc;
       },
-      act: (bloc) => bloc.add(const InitializeMap(initialCenter: LatLng(51.5, -0.1))),
+      act: (bloc) =>
+          bloc.add(const InitializeMap(initialCenter: LatLng(51.5, -0.1))),
       expect: () => [
         isA<MapState>().having((s) => s.isLoading, 'isLoading', true),
         isA<MapState>()
@@ -107,14 +116,25 @@ void main() {
     );
 
     blocTest<MapBloc, MapState>(
-      'centers map on new destination',
+      'appends destination to existing list',
       build: () => mapBloc,
-      seed: () => MapState.initial(),
+      seed: () => MapState.initial().copyWith(
+        destinations: [
+          Destination(
+            id: '0',
+            name: 'Existing Destination',
+            address: '456 Existing St',
+            latitude: 40.0,
+            longitude: -74.0,
+            createdAt: DateTime.now(),
+          ),
+        ],
+      ),
       act: (bloc) => bloc.add(AddMarker(testDestination)),
       expect: () => [
         isA<MapState>()
-            .having((s) => s.center.latitude, 'lat', testDestination.latitude)
-            .having((s) => s.center.longitude, 'lng', testDestination.longitude),
+            .having((s) => s.destinations.length, 'destinations count', 2)
+            .having((s) => s.destinations.last.id, 'last destination id', '1'),
       ],
     );
   });
@@ -123,22 +143,21 @@ void main() {
     blocTest<MapBloc, MapState>(
       'removes destination by id',
       build: () => mapBloc,
-      seed: () => MapState.initial().copyWith(
-        destinations: [testDestination],
-      ),
+      seed: () => MapState.initial().copyWith(destinations: [testDestination]),
       act: (bloc) => bloc.add(const RemoveMarker('1')),
       expect: () => [
-        isA<MapState>()
-            .having((s) => s.destinations.length, 'destinations count', 0),
+        isA<MapState>().having(
+          (s) => s.destinations.length,
+          'destinations count',
+          0,
+        ),
       ],
     );
 
     blocTest<MapBloc, MapState>(
       'does nothing if destination not found',
       build: () => mapBloc,
-      seed: () => MapState.initial().copyWith(
-        destinations: [testDestination],
-      ),
+      seed: () => MapState.initial().copyWith(destinations: [testDestination]),
       act: (bloc) => bloc.add(const RemoveMarker('999')),
       expect: () => [],
     );
@@ -151,7 +170,11 @@ void main() {
       seed: () => MapState.initial().copyWith(isFollowingUser: false),
       act: (bloc) => bloc.add(const ToggleFollowMode()),
       expect: () => [
-        isA<MapState>().having((s) => s.isFollowingUser, 'isFollowingUser', true),
+        isA<MapState>().having(
+          (s) => s.isFollowingUser,
+          'isFollowingUser',
+          true,
+        ),
       ],
     );
 
@@ -161,7 +184,11 @@ void main() {
       seed: () => MapState.initial().copyWith(isFollowingUser: true),
       act: (bloc) => bloc.add(const ToggleFollowMode()),
       expect: () => [
-        isA<MapState>().having((s) => s.isFollowingUser, 'isFollowingUser', false),
+        isA<MapState>().having(
+          (s) => s.isFollowingUser,
+          'isFollowingUser',
+          false,
+        ),
       ],
     );
   });
@@ -197,9 +224,7 @@ void main() {
       build: () => mapBloc,
       seed: () => MapState.initial(),
       act: (bloc) => bloc.add(const UpdateZoom(15.0)),
-      expect: () => [
-        isA<MapState>().having((s) => s.zoom, 'zoom', 15.0),
-      ],
+      expect: () => [isA<MapState>().having((s) => s.zoom, 'zoom', 15.0)],
     );
   });
 

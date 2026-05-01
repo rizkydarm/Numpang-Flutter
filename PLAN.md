@@ -346,21 +346,21 @@ MAPBOX_API_KEY=your_key_here
 ### Phase 3: Map Core (Days 8-11)
 
 **Agent A: Map BLoC & Service**
-- [ ] Create `MapBloc` for map-specific state
-- [ ] Implement `MapService` wrapper for flutter_map
-- [ ] Create `SearchBloc` for search state
-- [ ] Wire geocoding services to BLoC handlers
-- [ ] Write BLoC tests with `bloc_test`
+- [x] Create `MapBloc` for map-specific state
+- [x] Implement `MapService` wrapper for flutter_map
+- [x] Create `SearchBloc` for search state
+- [x] Wire geocoding services to BLoC handlers
+- [x] Write BLoC tests with `bloc_test`
 
 **Agent B: Map UI** (uses mock repositories until M2 is complete)
-- [ ] Create `MapScreen` with flutter_map widget
-- [ ] Implement custom Amber map styling
-- [ ] Add user location dot with pulse animation
-- [ ] Implement map tap handler with marker
-- [ ] Add "Add Destination" dialog on marker tap
-- [ ] Implement map centering on location update
-- [ ] Add crosshair FAB for recenter
-- [ ] Write widget tests for map interactions
+- [x] Create `MapScreen` with flutter_map widget
+- [x] Implement custom Amber map styling
+- [x] Add user location dot with pulse animation
+- [x] Implement map tap handler with marker
+- [x] Add "Add Destination" dialog on marker tap
+- [x] Implement map centering on location update
+- [x] Add crosshair FAB for recenter
+- [x] Write widget tests for map interactions
 
 **Milestone M3**: Map displays with user location, tap adds marker
 
