@@ -97,17 +97,15 @@ class MockLocationService {
     return _mockLocation;
   }
 
-  Stream<UserLocation> getLocationStream() {
+  Stream<UserLocation> getLocationStream() async* {
     if (_permissionStatus != LocationPermissionStatus.granted) {
-      return Stream.error(Exception('Location permission not granted'));
+      throw Exception('Location permission not granted');
     }
     if (_locationStreamController == null ||
         _locationStreamController!.isClosed) {
-      return Stream.error(
-        StateError('Stream controller is closed. Call reset() first.'),
-      );
+      throw StateError('Stream controller is closed. Call reset() first.');
     }
-    return _locationStreamController!.stream;
+    yield* _locationStreamController!.stream;
   }
 
   /// Returns a periodic stream of random locations for testing live updates.
