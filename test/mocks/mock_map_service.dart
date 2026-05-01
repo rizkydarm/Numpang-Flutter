@@ -82,5 +82,5 @@ class MockMapService implements MapService {
   }
 
   @override
-  double calculateZoomForRadius(double radiusInMeters) => 13.0;
+  double calculateZoomForRadius(double radiusInMeters) => 13;
 }

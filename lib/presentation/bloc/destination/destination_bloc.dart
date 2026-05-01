@@ -1,15 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/destination.dart';
-import '../../../domain/usecases/add_destination_usecase.dart';
-import '../../../domain/usecases/delete_destination_usecase.dart';
-import '../../../domain/usecases/get_destinations_usecase.dart';
-import 'destination_event.dart';
-import 'destination_state.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/usecases/add_destination_usecase.dart';
+import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
+import 'package:numpang_app/domain/usecases/get_destinations_usecase.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
 
 class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
-  final GetDestinationsUseCase _getDestinations;
-  final AddDestinationUseCase _addDestination;
-  final DeleteDestinationUseCase _deleteDestination;
 
   DestinationBloc({
     required GetDestinationsUseCase getDestinations,
@@ -29,6 +26,9 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
     // Load destinations on init
     add(const LoadDestinations());
   }
+  final GetDestinationsUseCase _getDestinations;
+  final AddDestinationUseCase _addDestination;
+  final DeleteDestinationUseCase _deleteDestination;
 
   Future<void> _onLoadDestinations(
     DestinationEvent event,

@@ -1,22 +1,22 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/place_suggestion.dart';
-import '../../domain/repositories/geocoding_repository.dart';
-import '../datasources/geocoding_cache.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
 class NominatimGeocodingRepository implements GeocodingRepository {
+
+  NominatimGeocodingRepository(this._dio, this._cache);
   final Dio _dio;
   final GeocodingCache _cache;
   static const String _baseUrl = 'https://nominatim.openstreetmap.org';
 
-  NominatimGeocodingRepository(this._dio, this._cache);
-
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/search',
         queryParameters: {'q': query, 'format': 'json', 'limit': 1},
       );
@@ -29,8 +29,8 @@ class NominatimGeocodingRepository implements GeocodingRepository {
 
       if (response.statusCode == 200 &&
           response.data is List &&
-          response.data.isNotEmpty) {
-        final result = response.data[0];
+          response.data?.isNotEmpty == true) {
+        final result = response.data![0];
         final lat = double.tryParse(result['lat'].toString());
         final lon = double.tryParse(result['lon'].toString());
 

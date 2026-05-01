@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'app.dart';
-import 'flavors.dart';
+import 'package:numpang_app/app.dart';
+import 'package:numpang_app/flavors.dart';
 
 void main() {
-  const String flavor = String.fromEnvironment(
+  const flavor = String.fromEnvironment(
     'appFlavor',
     defaultValue: 'dev',
   );

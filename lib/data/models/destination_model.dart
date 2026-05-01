@@ -1,4 +1,4 @@
-import '../../domain/entities/destination.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 class DestinationModel extends Destination {
   const DestinationModel({
@@ -9,6 +9,17 @@ class DestinationModel extends Destination {
     required super.longitude,
     required super.createdAt,
   });
+
+  factory DestinationModel.fromEntity(Destination entity) {
+    return DestinationModel(
+      id: entity.id,
+      name: entity.name,
+      address: entity.address,
+      latitude: entity.latitude,
+      longitude: entity.longitude,
+      createdAt: entity.createdAt,
+    );
+  }
 
   factory DestinationModel.fromJson(Map<String, dynamic> json) {
     return DestinationModel(
@@ -30,17 +41,6 @@ class DestinationModel extends Destination {
       'longitude': longitude,
       'createdAt': createdAt.toIso8601String(),
     };
-  }
-
-  factory DestinationModel.fromEntity(Destination entity) {
-    return DestinationModel(
-      id: entity.id,
-      name: entity.name,
-      address: entity.address,
-      latitude: entity.latitude,
-      longitude: entity.longitude,
-      createdAt: entity.createdAt,
-    );
   }
 
   Destination toEntity() {

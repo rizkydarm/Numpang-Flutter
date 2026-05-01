@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../core/errors/failures.dart';
-import '../entities/destination.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 abstract class DestinationRepository {
   Future<Either<Failure, Destination>> addDestination(Destination destination);

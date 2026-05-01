@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 
 class UserLocationMarker extends Marker {
-  UserLocationMarker({
-    required LatLng point,
+  const UserLocationMarker({
+    required super.point,
     double? width,
     double? height,
   }) : super(
-          point: point,
           width: width ?? 20,
           height: height ?? 20,
           child: const _AnimatedUserLocationDot(),
@@ -35,7 +33,7 @@ class _AnimatedUserLocationDotState extends State<_AnimatedUserLocationDot>
       vsync: this,
     )..repeat(reverse: true);
     
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.8).animate(
+    _scaleAnimation = Tween<double>(begin: 1, end: 1.8).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,

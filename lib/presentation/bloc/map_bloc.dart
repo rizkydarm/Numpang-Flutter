@@ -1,21 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../core/services/map_service.dart';
-import '../../domain/entities/destination.dart';
-import '../../domain/entities/user_location.dart';
-import '../../../data/repositories/location_repository_impl.dart';
-import 'map_event.dart';
-import 'map_state.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/core/services/map_service.dart';
+import 'package:numpang_app/data/repositories/location_repository_impl.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/entities/user_location.dart';
+import 'package:numpang_app/presentation/bloc/map_event.dart';
+import 'package:numpang_app/presentation/bloc/map_state.dart';
 
 class MapBloc extends Bloc<MapBlocEvent, MapState> {
-  final LocationService _locationService;
-  final MapService _mapService;
-  StreamSubscription<UserLocation>? _locationSubscription;
-
-  MapService get mapService => _mapService;
 
   MapBloc({required LocationService locationService, MapService? mapService})
     : _locationService = locationService,
@@ -32,6 +28,11 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
     on<UserLocationUpdated>(_onUserLocationUpdated);
     on<MapMoved>(_onMapMoved);
   }
+  final LocationService _locationService;
+  final MapService _mapService;
+  StreamSubscription<UserLocation>? _locationSubscription;
+
+  MapService get mapService => _mapService;
 
   @override
   Future<void> close() {
@@ -54,9 +55,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
       MapState(
         center: center,
         zoom: event.initialZoom,
-        destinations: [],
         isFollowingUser: location != null,
-        isLoading: false,
       ),
     );
 

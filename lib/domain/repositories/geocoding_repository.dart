@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../entities/place_suggestion.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 abstract class GeocodingRepository {
   Future<Either<Failure, LatLng>> searchAddress(String query);

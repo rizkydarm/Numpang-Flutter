@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:numpang_app/core/theme/app_theme.dart';
 
 class DeleteConfirmationDialog extends StatelessWidget {
-  final String destinationName;
 
   const DeleteConfirmationDialog({
-    super.key,
-    required this.destinationName,
+    required this.destinationName, super.key,
   });
+  final String destinationName;
 
   @override
   Widget build(BuildContext context) {

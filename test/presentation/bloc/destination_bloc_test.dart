@@ -32,10 +32,10 @@ void main() {
     address: '123 Test St',
     latitude: -6.2088,
     longitude: 106.8456,
-    createdAt: DateTime(2026, 5, 1),
+    createdAt: DateTime(2026, 5),
   );
 
-  final testPosition = const LatLng(-6.2088, 106.8456);
+  const testPosition = LatLng(-6.2088, 106.8456);
 
   setUp(() {
     mockGetDestinations = MockGetDestinationsUseCase();
@@ -127,7 +127,7 @@ void main() {
           );
         },
         act: (bloc) => bloc.add(
-          AddDestination(
+          const AddDestination(
             name: 'Test Destination',
             address: '123 Test St',
             position: testPosition,
@@ -136,21 +136,21 @@ void main() {
         expect: () => [
           // Constructor: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true;
+            return state.isLoading;
           }),
           // Constructor: loaded
           predicate<DestinationState>((state) {
-            return state.isLoading == false && state.destinations.isEmpty;
+            return !state.isLoading && state.destinations.isEmpty;
           }),
           // AddDestination: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true && state.destinations.isEmpty;
+            return state.isLoading && state.destinations.isEmpty;
           }),
           // AddDestination: loaded with new destination
           predicate<DestinationState>((state) {
             return state.destinations.length == 1 &&
                 state.destinations.first.name == 'Test Destination' &&
-                state.isLoading == false;
+                !state.isLoading;
           }),
         ],
       );
@@ -171,7 +171,7 @@ void main() {
           );
         },
         act: (bloc) => bloc.add(
-          AddDestination(
+          const AddDestination(
             name: 'Test Destination',
             address: '123 Test St',
             position: testPosition,
@@ -180,19 +180,19 @@ void main() {
         expect: () => [
           // Constructor: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true;
+            return state.isLoading;
           }),
           // Constructor: loaded
           predicate<DestinationState>((state) {
-            return state.isLoading == false && state.destinations.isEmpty;
+            return !state.isLoading && state.destinations.isEmpty;
           }),
           // AddDestination: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true && state.error == null;
+            return state.isLoading && state.error == null;
           }),
           // AddDestination: error
           predicate<DestinationState>((state) {
-            return state.isLoading == false &&
+            return !state.isLoading &&
                 state.error == const CacheFailure(message: 'Cache error');
           }),
         ],
@@ -219,11 +219,11 @@ void main() {
         ),
         expect: () => [
           predicate<DestinationState>((state) {
-            return state.isLoading == true && state.error == null;
+            return state.isLoading && state.error == null;
           }),
           predicate<DestinationState>((state) {
             return state.destinations.isEmpty &&
-                state.isLoading == false &&
+                !state.isLoading &&
                 state.error == null;
           }),
         ],
@@ -249,13 +249,13 @@ void main() {
         ),
         expect: () => [
           predicate<DestinationState>((state) {
-            return state.isLoading == true &&
+            return state.isLoading &&
                 state.selectedDestination == testDestination;
           }),
           predicate<DestinationState>((state) {
             return state.destinations.isEmpty &&
                 state.selectedDestination == null &&
-                state.isLoading == false;
+                !state.isLoading;
           }),
         ],
       );
@@ -279,10 +279,10 @@ void main() {
         ),
         expect: () => [
           predicate<DestinationState>((state) {
-            return state.isLoading == true && state.destinations.length == 1;
+            return state.isLoading && state.destinations.length == 1;
           }),
           predicate<DestinationState>((state) {
-            return state.isLoading == false &&
+            return !state.isLoading &&
                 state.error != null &&
                 state.destinations.length == 1;
           }),
@@ -307,11 +307,11 @@ void main() {
         expect: () => [
           // Constructor: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true;
+            return state.isLoading;
           }),
           // Constructor: loaded
           predicate<DestinationState>((state) {
-            return state.isLoading == false && state.destinations.isEmpty;
+            return !state.isLoading && state.destinations.isEmpty;
           }),
           // SelectDestination
           predicate<DestinationState>((state) {
@@ -339,11 +339,11 @@ void main() {
         expect: () => [
           // Constructor: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true;
+            return state.isLoading;
           }),
           // Constructor: loaded
           predicate<DestinationState>((state) {
-            return state.isLoading == false && state.destinations.isEmpty;
+            return !state.isLoading && state.destinations.isEmpty;
           }),
           // Deselect (state same as initial due to Equatable, may not emit)
         ],
@@ -370,11 +370,11 @@ void main() {
         expect: () => [
           // Constructor: loading
           predicate<DestinationState>((state) {
-            return state.isLoading == true && state.error == null;
+            return state.isLoading && state.error == null;
           }),
           // Constructor: loaded
           predicate<DestinationState>((state) {
-            return state.isLoading == false &&
+            return !state.isLoading &&
                 state.destinations.isEmpty &&
                 state.error == null;
           }),

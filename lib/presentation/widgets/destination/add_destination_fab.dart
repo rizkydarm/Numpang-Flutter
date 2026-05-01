@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:numpang_app/core/theme/app_theme.dart';
 
 class AddDestinationFab extends StatelessWidget {
+  const AddDestinationFab({required this.onPressed, super.key});
   final VoidCallback onPressed;
-
-  const AddDestinationFab({
-    super.key,
-    required this.onPressed,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +19,9 @@ class AddDestinationFab extends StatelessWidget {
 
 /// Dialog to input destination name when adding
 class AddDestinationDialog extends StatefulWidget {
+  const AddDestinationDialog({super.key, this.initialName, this.address});
   final String? initialName;
   final String? address;
-
-  const AddDestinationDialog({
-    super.key,
-    this.initialName,
-    this.address,
-  });
 
   @override
   State<AddDestinationDialog> createState() => _AddDestinationDialogState();
@@ -42,10 +33,8 @@ class AddDestinationDialog extends StatefulWidget {
   }) async {
     return showDialog<String>(
       context: context,
-      builder: (context) => AddDestinationDialog(
-        initialName: initialName,
-        address: address,
-      ),
+      builder: (context) =>
+          AddDestinationDialog(initialName: initialName, address: address),
     );
   }
 }
@@ -72,9 +61,7 @@ class _AddDestinationDialogState extends State<AddDestinationDialog> {
 
     return AlertDialog(
       backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         'Add Destination',
         style: theme.textTheme.titleMedium?.copyWith(
@@ -106,7 +93,7 @@ class _AddDestinationDialogState extends State<AddDestinationDialog> {
               hintText: 'Enter destination name',
               filled: true,
               fillColor: isDark
-                  ? AppColors.surfaceDark.withOpacity(0.5)
+                  ? AppColors.surfaceDark.withValues(alpha: 0.5)
                   : Colors.grey.shade100,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -114,10 +101,7 @@ class _AddDestinationDialogState extends State<AddDestinationDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppColors.primary,
-                  width: 1,
-                ),
+                borderSide: const BorderSide(color: AppColors.primary),
               ),
             ),
             style: theme.textTheme.bodyMedium?.copyWith(

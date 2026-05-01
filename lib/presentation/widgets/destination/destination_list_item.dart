@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../domain/entities/destination.dart';
+import 'package:numpang_app/core/theme/app_theme.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 class DestinationListItem extends StatelessWidget {
+  const DestinationListItem({
+    required this.destination,
+    required this.onTap,
+    required this.onDelete,
+    super.key,
+    this.isSelected = false,
+  });
   final Destination destination;
   final bool isSelected;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-
-  const DestinationListItem({
-    super.key,
-    required this.destination,
-    this.isSelected = false,
-    required this.onTap,
-    required this.onDelete,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,21 +36,18 @@ class DestinationListItem extends StatelessWidget {
           color: Colors.red.shade700,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         elevation: isSelected ? 2 : 0,
         color: isSelected
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.primary.withValues(alpha: 0.1)
             : (isDark ? AppColors.surfaceDark : Colors.white),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: isSelected
-              ? BorderSide(color: AppColors.primary, width: 1)
+              ? const BorderSide(color: AppColors.primary)
               : BorderSide.none,
         ),
         child: ListTile(
@@ -64,13 +60,10 @@ class DestinationListItem extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.location_on,
-              color: AppColors.primary,
-            ),
+            child: const Icon(Icons.location_on, color: AppColors.primary),
           ),
           title: Text(
             destination.name,
@@ -109,9 +102,7 @@ class DestinationListItem extends StatelessWidget {
           ),
           trailing: Icon(
             Icons.chevron_right,
-            color: isDark
-                ? AppColors.textTertiaryDark
-                : AppColors.textTertiary,
+            color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiary,
           ),
         ),
       ),

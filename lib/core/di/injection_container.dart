@@ -1,28 +1,28 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:numpang_app/core/utils/dio_client.dart';
+import 'package:numpang_app/data/datasources/destination_local_datasource.dart';
+import 'package:numpang_app/data/datasources/destination_remote_datasource.dart';
+import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/data/repositories/destination_repository_impl.dart';
+import 'package:numpang_app/data/repositories/geocoding_repository_impl.dart';
+import 'package:numpang_app/data/repositories/location_repository_impl.dart';
+import 'package:numpang_app/domain/repositories/destination_repository.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
+import 'package:numpang_app/domain/usecases/add_destination_usecase.dart';
+import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
+import 'package:numpang_app/domain/usecases/get_destinations_usecase.dart';
 import 'package:numpang_app/flavors.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
+import 'package:numpang_app/presentation/bloc/map_bloc.dart';
+import 'package:numpang_app/presentation/bloc/search_bloc.dart';
 import 'package:provider/provider.dart';
-import '../../presentation/bloc/destination/destination_bloc.dart';
-import '../../presentation/bloc/map_bloc.dart';
-import '../../presentation/bloc/search_bloc.dart';
-import '../../data/repositories/location_repository_impl.dart';
-import '../../data/datasources/destination_local_datasource.dart';
-import '../../data/datasources/destination_remote_datasource.dart';
-import '../../data/datasources/geocoding_cache.dart';
-import '../../data/repositories/destination_repository_impl.dart';
-import '../../data/repositories/geocoding_repository_impl.dart';
-import '../../domain/repositories/destination_repository.dart';
-import '../../domain/repositories/geocoding_repository.dart';
-import '../../domain/usecases/add_destination_usecase.dart';
-import '../../domain/usecases/delete_destination_usecase.dart';
-import '../../domain/usecases/get_destinations_usecase.dart';
-import '../utils/dio_client.dart';
 
 class InjectionContainer extends StatelessWidget {
-  final Widget child;
 
-  const InjectionContainer({super.key, required this.child});
+  const InjectionContainer({required this.child, super.key});
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {

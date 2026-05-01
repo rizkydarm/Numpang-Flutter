@@ -1,20 +1,20 @@
 import 'package:dartz/dartz.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/destination.dart';
-import '../../domain/repositories/destination_repository.dart';
-import '../datasources/destination_local_datasource.dart';
-import '../datasources/destination_remote_datasource.dart';
-import '../models/destination_model.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/data/datasources/destination_local_datasource.dart';
+import 'package:numpang_app/data/datasources/destination_remote_datasource.dart';
+import 'package:numpang_app/data/models/destination_model.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/repositories/destination_repository.dart';
 
 class DestinationRepositoryImpl implements DestinationRepository {
-  final DestinationLocalDataSource _localDataSource;
-  final DestinationRemoteDataSource _remoteDataSource;
 
   DestinationRepositoryImpl({
     required DestinationLocalDataSource localDataSource,
     required DestinationRemoteDataSource remoteDataSource,
   })  : _localDataSource = localDataSource,
         _remoteDataSource = remoteDataSource;
+  final DestinationLocalDataSource _localDataSource;
+  final DestinationRemoteDataSource _remoteDataSource;
 
   @override
   Future<Either<Failure, Destination>> addDestination(Destination destination) async {

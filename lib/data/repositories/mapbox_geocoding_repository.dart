@@ -1,18 +1,18 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/place_suggestion.dart';
-import '../../domain/repositories/geocoding_repository.dart';
-import '../datasources/geocoding_cache.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
 class MapboxGeocodingRepository implements GeocodingRepository {
+
+  MapboxGeocodingRepository(this._dio, this._cache, this._accessToken);
   final Dio _dio;
   final GeocodingCache _cache;
   final String _accessToken;
   static const String _baseUrl = 'https://api.mapbox.com/search/geocode/v6';
-
-  MapboxGeocodingRepository(this._dio, this._cache, this._accessToken);
 
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {

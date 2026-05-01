@@ -1,12 +1,8 @@
 import 'package:equatable/equatable.dart';
-import '../../../core/errors/failures.dart';
-import '../../../domain/entities/destination.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 class DestinationState extends Equatable {
-  final List<Destination> destinations;
-  final bool isLoading;
-  final Failure? error;
-  final Destination? selectedDestination;
 
   const DestinationState({
     this.destinations = const [],
@@ -18,6 +14,10 @@ class DestinationState extends Equatable {
   factory DestinationState.initial() {
     return const DestinationState();
   }
+  final List<Destination> destinations;
+  final bool isLoading;
+  final Failure? error;
+  final Destination? selectedDestination;
 
   DestinationState copyWith({
     List<Destination>? destinations,

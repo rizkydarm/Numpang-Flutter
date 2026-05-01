@@ -1,17 +1,17 @@
 class LRUCacheEntry<V> {
-  final V value;
-  final DateTime timestamp;
 
   LRUCacheEntry(this.value) : timestamp = DateTime.now();
+  final V value;
+  final DateTime timestamp;
 }
 
 class LRUCache<K, V> {
+
+  LRUCache({required this.capacity, this.ttl});
   final int capacity;
   final Duration? ttl;
   final Map<K, LRUCacheEntry<V>> _cache = {};
   final List<K> _keys = [];
-
-  LRUCache({required this.capacity, this.ttl});
 
   V? get(K key) {
     _cleanupExpired();

@@ -1,15 +1,12 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
-import '../../domain/repositories/geocoding_repository.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
-import 'search_event.dart';
-import 'search_state.dart';
+import 'package:numpang_app/presentation/bloc/search_event.dart';
+import 'package:numpang_app/presentation/bloc/search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  final GeocodingRepository _geocodingRepository;
-  Timer? _debounceTimer;
-  static const Duration _debounceDelay = Duration(milliseconds: 300);
 
   SearchBloc({required GeocodingRepository geocodingRepository})
       : _geocodingRepository = geocodingRepository,
@@ -20,6 +17,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<SuggestionSelected>(_onSuggestionSelected);
     on<ClearSearch>(_onClearSearch);
   }
+  final GeocodingRepository _geocodingRepository;
+  Timer? _debounceTimer;
+  static const Duration _debounceDelay = Duration(milliseconds: 300);
 
   void _onQueryChanged(QueryChanged event, Emitter<SearchState> emit) {
     _debounceTimer?.cancel();
@@ -46,7 +46,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   ) async {
     if (event.query.isEmpty) return;
 
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     final result = await _geocodingRepository.autocomplete(event.query);
 
@@ -59,7 +59,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       (suggestions) => emit(state.copyWith(
         isLoading: false,
         suggestions: suggestions,
-        error: null,
       )),
     );
   }
@@ -78,7 +77,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     emit(state.copyWith(
       query: event.query,
       isLoading: true,
-      error: null,
     ));
 
     final result = await _geocodingRepository.searchAddress(event.query);
@@ -99,7 +97,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           )),
           (address) => emit(state.copyWith(
             isLoading: false,
-            error: null,
             resultPosition: position,
             resultAddress: address,
           )),
@@ -117,7 +114,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       selectedSuggestion: event.suggestion,
       query: event.suggestion.name,
       suggestions: [],
-      error: null,
       resultPosition: LatLng(event.suggestion.latitude, event.suggestion.longitude),
       resultAddress: event.suggestion.address,
     ));
