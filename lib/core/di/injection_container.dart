@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numpang_app/flavors.dart';
 import 'package:provider/provider.dart';
+import '../../presentation/bloc/destination/destination_bloc.dart';
 import '../../presentation/bloc/map_bloc.dart';
 import '../../presentation/bloc/search_bloc.dart';
 import '../../data/repositories/location_repository_impl.dart';
@@ -13,8 +14,10 @@ import '../../data/repositories/destination_repository_impl.dart';
 import '../../data/repositories/geocoding_repository_impl.dart';
 import '../../domain/repositories/destination_repository.dart';
 import '../../domain/repositories/geocoding_repository.dart';
+import '../../domain/usecases/add_destination_usecase.dart';
+import '../../domain/usecases/delete_destination_usecase.dart';
+import '../../domain/usecases/get_destinations_usecase.dart';
 import '../utils/dio_client.dart';
-
 
 class InjectionContainer extends StatelessWidget {
   final Widget child;
@@ -39,6 +42,14 @@ class InjectionContainer extends StatelessWidget {
       remoteDataSource: destinationRemoteDataSource,
     );
 
+    final getDestinationsUseCase = GetDestinationsUseCase(
+      destinationRepository,
+    );
+    final addDestinationUseCase = AddDestinationUseCase(destinationRepository);
+    final deleteDestinationUseCase = DeleteDestinationUseCase(
+      destinationRepository,
+    );
+
     final locationService = LocationService();
 
     return MultiProvider(
@@ -57,6 +68,13 @@ class InjectionContainer extends StatelessWidget {
           BlocProvider(
             create: (context) =>
                 SearchBloc(geocodingRepository: context.read()),
+          ),
+          BlocProvider(
+            create: (context) => DestinationBloc(
+              getDestinations: getDestinationsUseCase,
+              addDestination: addDestinationUseCase,
+              deleteDestination: deleteDestinationUseCase,
+            ),
           ),
         ],
         child: child,

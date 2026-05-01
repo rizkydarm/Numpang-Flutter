@@ -5,6 +5,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/theme/app_theme.dart';
 import 'package:numpang_app/core/services/map_service.dart';
 import 'package:numpang_app/presentation/widgets/map/user_location_marker.dart';
+import 'package:numpang_app/presentation/widgets/destination/destination_widgets.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
 import 'package:numpang_app/presentation/bloc/map_bloc.dart';
 import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/map_state.dart';
@@ -61,9 +65,27 @@ class _MapScreenState extends State<MapScreen> {
                 options: MapOptions(
                   initialCenter: state.center,
                   initialZoom: state.zoom,
-                  onTap: (tapPosition, point) {
-                    // Handle map tap to add destination
-                    context.read<MapBloc>().add(TapOnMap(point, address: null));
+                  onTap: (tapPosition, point) async {
+                    // Show dialog to name destination
+                    final name = await AddDestinationDialog.show(
+                      context,
+                      address:
+                          '${point.latitude.toStringAsFixed(4)}, ${point.longitude.toStringAsFixed(4)}',
+                    );
+                    if (name != null && context.mounted) {
+                      context.read<DestinationBloc>().add(
+                        AddDestination(
+                          name: name,
+                          address:
+                              '${point.latitude.toStringAsFixed(4)}, ${point.longitude.toStringAsFixed(4)}',
+                          position: point,
+                        ),
+                      );
+                      // Also add to MapBloc for markers
+                      context.read<MapBloc>().add(
+                        TapOnMap(point, address: name),
+                      );
+                    }
                   },
                   onPositionChanged: (position, hasGesture) {
                     // if (hasGesture) {
@@ -93,7 +115,10 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   // Destination markers
                   MarkerLayer(
-                    markers: _buildDestinationMarkers(context, state.destinations),
+                    markers: _buildDestinationMarkers(
+                      context,
+                      state.destinations,
+                    ),
                   ),
                   // User location marker
                   if (state.isFollowingUser)
@@ -114,7 +139,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               // My Location FAB
               Positioned(
-                bottom: 20,
+                bottom: 100,
                 right: 20,
                 child: FloatingActionButton(
                   backgroundColor: theme.colorScheme.primary,
@@ -127,6 +152,9 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
               ),
+
+              // Destination Bottom Sheet
+              const Positioned.fill(child: DestinationBottomSheet()),
             ],
           );
         },

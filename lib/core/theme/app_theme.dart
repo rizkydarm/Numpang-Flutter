@@ -65,3 +65,33 @@ class AppTheme {
     );
   }
 }
+
+/// App color constants for consistent usage across the app
+class AppColors {
+  // Primary
+  static const Color primary = Color(0xFFFFCA28);
+  static const Color onPrimary = Color(0xFF705600);
+  static const Color primaryContainer = Color(0xFFF3C01A);
+  static const Color onPrimaryContainer = Color(0xFF705600);
+
+  // Surfaces
+  static const Color surfaceDark = Color(0xFF1A1C1C);
+  static const Color surfaceLight = Color(0xFFE2E2E2);
+  static const Color scaffoldDark = Color(0xFF121414);
+  static const Color scaffoldLight = Color(0xFFE2E2E2);
+
+  // Text - Dark Mode
+  static const Color textPrimaryDark = Color(0xFFE2E2E2);
+  static const Color textSecondaryDark = Color(0xFFB0B0B0);
+  static const Color textTertiaryDark = Color(0xFF808080);
+
+  // Text - Light Mode
+  static const Color textPrimary = Color(0xFF1A1C1C);
+  static const Color textSecondary = Color(0xFF505050);
+  static const Color textTertiary = Color(0xFF808080);
+
+  // Semantic
+  static const Color error = Color(0xFFFFB4AB);
+  static const Color success = Color(0xFF4CAF50);
+  static const Color warning = Color(0xFFFF9800);
+}
