@@ -48,9 +48,8 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
       maxChildSize: _fullSize,
       snap: true,
       snapSizes: const [_collapsedSize, _halfSize, _fullSize],
-      // snapAnimationDuration: const Duration(milliseconds: 300),
       builder: (context, scrollController) {
-        return Container(
+        return DecoratedBox(
           decoration: BoxDecoration(
             color: isDark ? AppColors.surfaceDark : Colors.white,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -62,190 +61,157 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
               ),
             ],
           ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Column(
-                children: [
-                  // Drag Handle - always visible, minimal height
-                  GestureDetector(
-                    onVerticalDragEnd: (_) {
-                      final currentSize = _controller.size;
-                      final target = currentSize < (_halfSize + _collapsedSize) / 2
-                          ? _collapsedSize
-                          : currentSize < (_fullSize + _halfSize) / 2
-                              ? _halfSize
-                              : _fullSize;
-                      _controller.animateTo(
-                        target,
-                        duration: const Duration(milliseconds: 240),
-                        curve: Curves.easeInOutCubic,
-                      );
-                    },
-                    onVerticalDragUpdate: (details) {
-                      if (!_controller.isAttached) return;
-                      final currentSize = _controller.size;
-                      final delta = details.delta.dy;
-                      final newSize =
-                          currentSize - delta / constraints.maxHeight;
-                      _controller.animateTo(
-                        newSize.clamp(_collapsedSize, _fullSize),
-                        duration: const Duration(milliseconds: 240),
-                        curve: Curves.easeOutExpo,
-                      );
-                    },
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          children: [
-                            Center(
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: isDark ? AppColors.textTertiaryDark.withValues(alpha: 0.5) : AppColors.textTertiary.withValues(alpha: 0.5),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                                child: const SizedBox(width: 40, height: 4),
-                              ),
-                            ),
+          child: BlocConsumer<DestinationBloc, DestinationState>(
+            listener: (context, state) {
+              if (state.error != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.error!.message),
+                    backgroundColor: Colors.red.shade700,
+                    action: SnackBarAction(
+                      label: 'Dismiss',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        context.read<DestinationBloc>().add(
+                          const ClearDestinationError(),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              }
+            },
+            builder: (context, state) {
+              return CustomScrollView(
+                controller: scrollController,
+                // Let DraggableScrollableSheet control physics
+                // physics: const ClampingScrollPhysics(),
+                slivers: [
+                  // Drag Handle
+                  SliverToBoxAdapter(
+                    child: GestureDetector(
+                      onVerticalDragEnd: (details) {
+                         
+                      },
+                      onVerticalDragUpdate: (details) {
                         
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Destinations',
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: isDark
-                                                ? AppColors.textPrimaryDark
-                                                : AppColors.textPrimary,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        BlocBuilder<DestinationBloc, DestinationState>(
-                                          builder: (context, state) {
-                                            final count = state.destinations.length;
-                                            return Text(
-                                              count == 0
-                                                  ? 'No destinations'
-                                                  : '$count ${count == 1 ? 'place' : 'places'} saved',
-                                              style: theme.textTheme.bodySmall?.copyWith(
-                                                color: isDark
-                                                    ? AppColors.textSecondaryDark
-                                                    : AppColors.textSecondary,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      },
+                      child: Center(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.textTertiaryDark.withValues(
+                                    alpha: 0.5,
+                                  )
+                                : AppColors.textTertiary.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          height: 4,
+                          width: 40,
                         ),
                       ),
                     ),
                   ),
-
-                  
-
-                  // Content - must always have a scrollable widget
-                  // so DraggableScrollableSheet can track gestures
-                  Expanded(
-                    child: BlocConsumer<DestinationBloc, DestinationState>(
-                      listener: (context, state) {
-                        if (state.error != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.error!.message),
-                              backgroundColor: Colors.red.shade700,
-                              action: SnackBarAction(
-                                label: 'Dismiss',
-                                textColor: Colors.white,
-                                onPressed: () {
-                                  context.read<DestinationBloc>().add(
-                                    const ClearDestinationError(),
-                                  );
-                                },
-                              ),
+                  // Header
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Destinations',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? AppColors.textPrimaryDark
+                                        : AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  state.destinations.isEmpty
+                                      ? 'No destinations'
+                                      : '${state.destinations.length} ${state.destinations.length == 1 ? 'place' : 'places'} saved',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: isDark
+                                        ? AppColors.textSecondaryDark
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        }
-                      },
-                      builder: (context, state) {
-                        if (state.isLoading && state.destinations.isEmpty) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (state.destinations.isEmpty) {
-                          return EmptyDestinationsView(
-                            onAddTap: () async {
-                              final name = await AddDestinationDialog.show(
-                                context,
-                                initialName: 'New Destination',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Content
+                  if (state.isLoading && state.destinations.isEmpty)
+                    const SliverFillRemaining(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  // else if (state.destinations.isEmpty)
+                  //   SliverFillRemaining(
+                  //     hasScrollBody: false,
+                  //     child: EmptyDestinationsView(
+                  //       onAddTap: () async {
+                  //         final name = await AddDestinationDialog.show(
+                  //           context,
+                  //           initialName: 'New Destination',
+                  //         );
+                  //         if (name != null && context.mounted) {
+                  //           context.read<DestinationBloc>().add(
+                  //             AddDestination(
+                  //               name: name,
+                  //               address: 'Current Location',
+                  //               position: const LatLng(-6.2088, 106.8456),
+                  //             ),
+                  //           );
+                  //         }
+                  //       },
+                  //     ),
+                  //   )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      sliver: SliverList.builder(
+                        itemCount: state.destinations.length,
+                        itemBuilder: (context, index) {
+                          final destination = state.destinations[index];
+                          return DestinationListItem(
+                            destination: destination,
+                            isSelected:
+                                state.selectedDestination?.id == destination.id,
+                            onTap: () {
+                              context.read<DestinationBloc>().add(
+                                SelectDestination(destination),
                               );
-                              if (name != null && context.mounted) {
+                              widget.onDestinationSelected?.call();
+                            },
+                            onDelete: () async {
+                              final confirmed =
+                                  await DeleteConfirmationDialog.show(
+                                    context,
+                                    destination.name,
+                                  );
+                              if (confirmed && context.mounted) {
                                 context.read<DestinationBloc>().add(
-                                  AddDestination(
-                                    name: name,
-                                    address: 'Current Location',
-                                    position: const LatLng(-6.2088, 106.8456),
+                                  DeleteDestination(
+                                    id: destination.id,
+                                    name: destination.name,
                                   ),
                                 );
                               }
                             },
                           );
-                        }
-
-                        return ListView.builder(
-                          controller: scrollController,
-                          // Always allow scrolling so sheet can expand
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: state.destinations.length,
-                          itemBuilder: (context, index) {
-                            final destination = state.destinations[index];
-                            return DestinationListItem(
-                              destination: destination,
-                              isSelected:
-                                  state.selectedDestination?.id ==
-                                  destination.id,
-                              onTap: () {
-                                context.read<DestinationBloc>().add(
-                                  SelectDestination(destination),
-                                );
-                                widget.onDestinationSelected?.call();
-                              },
-                              onDelete: () async {
-                                final confirmed =
-                                    await DeleteConfirmationDialog.show(
-                                      context,
-                                      destination.name,
-                                    );
-                                if (confirmed && context.mounted) {
-                                  context.read<DestinationBloc>().add(
-                                    DeleteDestination(
-                                      id: destination.id,
-                                      name: destination.name,
-                                    ),
-                                  );
-                                }
-                              },
-                            );
-                          },
-                        );
-                      },
+                        },
+                      ),
                     ),
-                  ),
                 ],
               );
             },
