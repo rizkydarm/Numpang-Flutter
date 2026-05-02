@@ -1,16 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/place_suggestion.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 class SearchState extends Equatable {
-  final String query;
-  final List<PlaceSuggestion> suggestions;
-  final bool isLoading;
-  final Failure? error;
-  final PlaceSuggestion? selectedSuggestion;
-  final LatLng? resultPosition;
-  final String? resultAddress;
 
   const SearchState({
     this.query = '',
@@ -25,6 +18,13 @@ class SearchState extends Equatable {
   factory SearchState.initial() {
     return const SearchState();
   }
+  final String query;
+  final List<PlaceSuggestion> suggestions;
+  final bool isLoading;
+  final Failure? error;
+  final PlaceSuggestion? selectedSuggestion;
+  final LatLng? resultPosition;
+  final String? resultAddress;
 
   SearchState copyWith({
     String? query,

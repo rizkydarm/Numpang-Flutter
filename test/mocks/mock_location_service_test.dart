@@ -9,8 +9,8 @@ void main() {
   final testLocation = UserLocation(
     latitude: 51.5074,
     longitude: -0.1278,
-    accuracy: 5.0,
-    timestamp: DateTime(2026, 5, 1),
+    accuracy: 5,
+    timestamp: DateTime(2026, 5),
   );
 
   group('MockLocationService', () {
@@ -159,8 +159,8 @@ void main() {
           UserLocation(
             latitude: 52.5200,
             longitude: 13.4050,
-            accuracy: 8.0,
-            timestamp: DateTime(2026, 5, 1, 12, 0, 0),
+            accuracy: 8,
+            timestamp: DateTime(2026, 5, 1, 12),
           ),
         );
 

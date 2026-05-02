@@ -1,4 +1,4 @@
-import '../models/destination_model.dart';
+import 'package:numpang_app/data/models/destination_model.dart';
 
 abstract class DestinationRemoteDataSource {
   Future<List<DestinationModel>> getDestinations();

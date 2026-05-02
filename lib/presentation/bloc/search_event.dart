@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/place_suggestion.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 abstract class SearchEvent extends Equatable {
   const SearchEvent();
@@ -9,27 +9,27 @@ abstract class SearchEvent extends Equatable {
 }
 
 class QueryChanged extends SearchEvent {
-  final String query;
 
   const QueryChanged(this.query);
+  final String query;
 
   @override
   List<Object?> get props => [query];
 }
 
 class SearchSubmitted extends SearchEvent {
-  final String query;
 
   const SearchSubmitted(this.query);
+  final String query;
 
   @override
   List<Object?> get props => [query];
 }
 
 class SuggestionSelected extends SearchEvent {
-  final PlaceSuggestion suggestion;
 
   const SuggestionSelected(this.suggestion);
+  final PlaceSuggestion suggestion;
 
   @override
   List<Object?> get props => [suggestion];
@@ -40,9 +40,9 @@ class ClearSearch extends SearchEvent {
 }
 
 class SearchDebounced extends SearchEvent {
-  final String query;
 
   const SearchDebounced(this.query);
+  final String query;
 
   @override
   List<Object?> get props => [query];

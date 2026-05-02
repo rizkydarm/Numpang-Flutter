@@ -32,7 +32,7 @@ void main() {
     address: '123 Test St',
     latitude: 40.7128,
     longitude: -74.0060,
-    createdAt: DateTime(2024, 1, 1),
+    createdAt: DateTime(2024),
   );
 
   final testModel = DestinationModel.fromEntity(testDestination);

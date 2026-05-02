@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import '../../domain/entities/destination.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 class MapService {
   MapController? _controller;
@@ -30,14 +30,14 @@ class MapService {
     if (positions.isEmpty || _controller == null) return;
 
     if (positions.length == 1) {
-      moveTo(positions.first, 15.0);
+      moveTo(positions.first, 15);
       return;
     }
 
-    double minLat = positions.first.latitude;
-    double maxLat = positions.first.latitude;
-    double minLng = positions.first.longitude;
-    double maxLng = positions.first.longitude;
+    var minLat = positions.first.latitude;
+    var maxLat = positions.first.latitude;
+    var minLng = positions.first.longitude;
+    var maxLng = positions.first.longitude;
 
     for (final pos in positions.skip(1)) {
       if (pos.latitude < minLat) minLat = pos.latitude;
@@ -105,9 +105,9 @@ class MapService {
   }
 
   double calculateZoomForRadius(double radiusInMeters) {
-    const double earthCircumference = 40075016.686;
+    const earthCircumference = 40075016.686;
     const double tileSize = 256;
-    final double scale = radiusInMeters * 4 / earthCircumference;
+    final scale = radiusInMeters * 4 / earthCircumference;
     return math.log(earthCircumference * tileSize / scale) / math.log(2);
   }
 }

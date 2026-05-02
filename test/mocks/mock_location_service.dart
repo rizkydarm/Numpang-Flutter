@@ -11,9 +11,6 @@ import 'package:numpang_app/domain/entities/user_location.dart';
 /// - Emit location updates via stream
 /// - Simulate permission denied scenarios
 class MockLocationService {
-  LocationPermissionStatus _permissionStatus = LocationPermissionStatus.granted;
-  UserLocation? _mockLocation;
-  StreamController<UserLocation>? _locationStreamController;
 
   MockLocationService({
     LocationPermissionStatus permissionStatus =
@@ -23,11 +20,14 @@ class MockLocationService {
        _mockLocation = mockLocation ?? _defaultLocation {
     _initStreamController();
   }
+  LocationPermissionStatus _permissionStatus = LocationPermissionStatus.granted;
+  UserLocation? _mockLocation;
+  StreamController<UserLocation>? _locationStreamController;
 
   static final UserLocation _defaultLocation = UserLocation(
     latitude: 40.7128,
     longitude: -74.0060,
-    accuracy: 10.0,
+    accuracy: 10,
     timestamp: DateTime.now(),
   );
 

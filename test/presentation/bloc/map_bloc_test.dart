@@ -20,7 +20,7 @@ void main() {
   final testLocation = UserLocation(
     latitude: 40.7128,
     longitude: -74.0060,
-    accuracy: 10.0,
+    accuracy: 10,
     timestamp: DateTime.now(),
   );
 
@@ -51,7 +51,7 @@ void main() {
         ).thenAnswer((_) async => testLocation);
         when(
           mockLocationService.getLocationStream(),
-        ).thenAnswer((_) => Stream.empty());
+        ).thenAnswer((_) => const Stream.empty());
         return mapBloc;
       },
       act: (bloc) => bloc.add(const InitializeMap()),
@@ -73,7 +73,7 @@ void main() {
         ).thenAnswer((_) async => null);
         when(
           mockLocationService.getLocationStream(),
-        ).thenAnswer((_) => Stream.empty());
+        ).thenAnswer((_) => const Stream.empty());
         return mapBloc;
       },
       act: (bloc) =>
@@ -92,7 +92,7 @@ void main() {
     blocTest<MapBloc, MapState>(
       'updates center position',
       build: () => mapBloc,
-      seed: () => MapState.initial(),
+      seed: MapState.initial,
       act: (bloc) => bloc.add(const CenterOnLocation(LatLng(51.5, -0.1))),
       expect: () => [
         isA<MapState>()
@@ -106,7 +106,7 @@ void main() {
     blocTest<MapBloc, MapState>(
       'adds destination to state',
       build: () => mapBloc,
-      seed: () => MapState.initial(),
+      seed: MapState.initial,
       act: (bloc) => bloc.add(AddMarker(testDestination)),
       expect: () => [
         isA<MapState>()
@@ -124,8 +124,8 @@ void main() {
             id: '0',
             name: 'Existing Destination',
             address: '456 Existing St',
-            latitude: 40.0,
-            longitude: -74.0,
+            latitude: 40,
+            longitude: -74,
             createdAt: DateTime.now(),
           ),
         ],
@@ -198,7 +198,7 @@ void main() {
       'updates center when following user',
       build: () => mapBloc,
       seed: () => MapState.initial().copyWith(isFollowingUser: true),
-      act: (bloc) => bloc.add(const UserLocationUpdated(LatLng(40.7, -74.0))),
+      act: (bloc) => bloc.add(const UserLocationUpdated(LatLng(40.7, -74))),
       expect: () => [
         isA<MapState>()
             .having((s) => s.center.latitude, 'lat', 40.7)
@@ -213,7 +213,7 @@ void main() {
         isFollowingUser: false,
         center: const LatLng(0, 0),
       ),
-      act: (bloc) => bloc.add(const UserLocationUpdated(LatLng(40.7, -74.0))),
+      act: (bloc) => bloc.add(const UserLocationUpdated(LatLng(40.7, -74))),
       expect: () => [],
     );
   });
@@ -222,8 +222,8 @@ void main() {
     blocTest<MapBloc, MapState>(
       'updates zoom level',
       build: () => mapBloc,
-      seed: () => MapState.initial(),
-      act: (bloc) => bloc.add(const UpdateZoom(15.0)),
+      seed: MapState.initial,
+      act: (bloc) => bloc.add(const UpdateZoom(15)),
       expect: () => [isA<MapState>().having((s) => s.zoom, 'zoom', 15.0)],
     );
   });
@@ -232,8 +232,8 @@ void main() {
     blocTest<MapBloc, MapState>(
       'updates center and zoom',
       build: () => mapBloc,
-      seed: () => MapState.initial(),
-      act: (bloc) => bloc.add(const MapMoved(LatLng(51.5, -0.1), 12.0)),
+      seed: MapState.initial,
+      act: (bloc) => bloc.add(const MapMoved(LatLng(51.5, -0.1), 12)),
       expect: () => [
         isA<MapState>()
             .having((s) => s.center.latitude, 'lat', 51.5)

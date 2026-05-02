@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:hive/hive.dart';
-import '../models/destination_model.dart';
+import 'package:numpang_app/data/models/destination_model.dart';
 
 abstract class DestinationLocalDataSource {
   Future<List<DestinationModel>> getDestinations();

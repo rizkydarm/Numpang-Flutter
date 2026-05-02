@@ -1,10 +1,6 @@
 import 'package:equatable/equatable.dart';
 
 class UserLocation extends Equatable {
-  final double latitude;
-  final double longitude;
-  final double accuracy;
-  final DateTime timestamp;
 
   const UserLocation({
     required this.latitude,
@@ -12,6 +8,10 @@ class UserLocation extends Equatable {
     required this.accuracy,
     required this.timestamp,
   });
+  final double latitude;
+  final double longitude;
+  final double accuracy;
+  final DateTime timestamp;
 
   @override
   List<Object?> get props => [latitude, longitude, accuracy, timestamp];

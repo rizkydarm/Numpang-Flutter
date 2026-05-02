@@ -1,19 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/place_suggestion.dart';
-import '../../domain/repositories/geocoding_repository.dart';
-import '../datasources/geocoding_cache.dart';
-import 'mapbox_geocoding_repository.dart';
-import 'nominatim_geocoding_repository.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/data/repositories/mapbox_geocoding_repository.dart';
+import 'package:numpang_app/data/repositories/nominatim_geocoding_repository.dart';
+import 'package:numpang_app/domain/entities/place_suggestion.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
 enum GeocodingProvider { nominatim, mapbox }
 
 class GeocodingRepositoryImpl implements GeocodingRepository {
-  final NominatimGeocodingRepository _nominatimRepo;
-  final MapboxGeocodingRepository? _mapboxRepo;
-  final GeocodingProvider _primaryProvider;
 
   GeocodingRepositoryImpl({
     required Dio dio,
@@ -25,6 +22,9 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
             ? MapboxGeocodingRepository(dio, cache, mapboxAccessToken)
             : null,
         _primaryProvider = primaryProvider;
+  final NominatimGeocodingRepository _nominatimRepo;
+  final MapboxGeocodingRepository? _mapboxRepo;
+  final GeocodingProvider _primaryProvider;
 
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {
@@ -37,7 +37,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo.searchAddress(query);
+      return _mapboxRepo.searchAddress(query);
     }
 
     return nominatimResult;
@@ -54,7 +54,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo.reverseGeocode(position);
+      return _mapboxRepo.reverseGeocode(position);
     }
 
     return nominatimResult;
@@ -71,7 +71,7 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
     if (nominatimResult.isRight()) return nominatimResult;
 
     if (_mapboxRepo != null && _primaryProvider == GeocodingProvider.nominatim) {
-      return await _mapboxRepo.autocomplete(input);
+      return _mapboxRepo.autocomplete(input);
     }
 
     return nominatimResult;

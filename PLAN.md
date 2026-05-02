@@ -374,7 +374,7 @@ MAPBOX_API_KEY=your_key_here
 - [ ] Write BLoC tests with `bloc_test`
 - [ ] Achieve >80% test coverage
 
-**Agent B: Bottom Sheet UI**
+**Bottom Sheet UI**
 - [ ] Create `DestinationBottomSheet` widget
 - [ ] Implement 3-state drag handle (Collapsed/Half/Full)
 - [ ] Create destination list item widget

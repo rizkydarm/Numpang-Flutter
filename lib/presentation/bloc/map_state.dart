@@ -1,15 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
-import '../../core/errors/failures.dart';
-import '../../domain/entities/destination.dart';
+import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 class MapState extends Equatable {
-  final LatLng center;
-  final double zoom;
-  final List<Destination> destinations;
-  final bool isFollowingUser;
-  final bool isLoading;
-  final Failure? error;
 
   const MapState({
     required this.center,
@@ -23,12 +17,15 @@ class MapState extends Equatable {
   factory MapState.initial() {
     return const MapState(
       center: LatLng(-6.2088, 106.8456), // Jakarta default
-      zoom: 13.0,
-      destinations: [],
-      isFollowingUser: false,
-      isLoading: false,
+      zoom: 13,
     );
   }
+  final LatLng center;
+  final double zoom;
+  final List<Destination> destinations;
+  final bool isFollowingUser;
+  final bool isLoading;
+  final Failure? error;
 
   MapState copyWith({
     LatLng? center,

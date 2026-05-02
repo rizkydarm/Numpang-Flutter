@@ -1,10 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:numpang_app/core/errors/failures.dart';
 import 'package:numpang_app/domain/repositories/destination_repository.dart';
 import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
+
 import 'delete_destination_usecase_test.mocks.dart';
 
 @GenerateMocks([DestinationRepository])

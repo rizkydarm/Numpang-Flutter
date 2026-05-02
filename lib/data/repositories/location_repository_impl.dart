@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../../domain/entities/user_location.dart';
+import 'package:numpang_app/domain/entities/user_location.dart';
 
 enum LocationPermissionStatus {
   granted,
@@ -12,10 +12,10 @@ enum LocationPermissionStatus {
 }
 
 class LocationService {
-  final GeolocatorPlatform _geolocator;
 
   LocationService({GeolocatorPlatform? geolocator})
     : _geolocator = geolocator ?? GeolocatorPlatform.instance;
+  final GeolocatorPlatform _geolocator;
 
   Future<LocationPermissionStatus> checkPermission() async {
     final serviceEnabled = await _geolocator.isLocationServiceEnabled();
@@ -49,10 +49,7 @@ class LocationService {
         defaultTargetPlatform == TargetPlatform.macOS) {
       return AppleSettings(
         accuracy: accuracy,
-        activityType: ActivityType.other,
         distanceFilter: 10,
-        pauseLocationUpdatesAutomatically: false,
-        showBackgroundLocationIndicator: false,
       );
     }
     return LocationSettings(accuracy: accuracy, distanceFilter: 10);

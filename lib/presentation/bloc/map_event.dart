@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
-import '../../domain/entities/destination.dart';
+import 'package:numpang_app/domain/entities/destination.dart';
 
 abstract class MapBlocEvent extends Equatable {
   const MapBlocEvent();
@@ -10,57 +10,57 @@ abstract class MapBlocEvent extends Equatable {
 }
 
 class InitializeMap extends MapBlocEvent {
-  final LatLng? initialCenter;
-  final double initialZoom;
 
   const InitializeMap({this.initialCenter, this.initialZoom = 13.0});
+  final LatLng? initialCenter;
+  final double initialZoom;
 
   @override
   List<Object?> get props => [initialCenter, initialZoom];
 }
 
 class CenterOnLocation extends MapBlocEvent {
-  final LatLng position;
-  final double? zoom;
 
   const CenterOnLocation(this.position, {this.zoom});
+  final LatLng position;
+  final double? zoom;
 
   @override
   List<Object?> get props => [position, zoom];
 }
 
 class TapOnMap extends MapBlocEvent {
-  final LatLng position;
-  final String? address;
 
   const TapOnMap(this.position, {this.address});
+  final LatLng position;
+  final String? address;
 
   @override
   List<Object?> get props => [position, address];
 }
 
 class AddMarker extends MapBlocEvent {
-  final Destination destination;
 
   const AddMarker(this.destination);
+  final Destination destination;
 
   @override
   List<Object?> get props => [destination];
 }
 
 class RemoveMarker extends MapBlocEvent {
-  final String destinationId;
 
   const RemoveMarker(this.destinationId);
+  final String destinationId;
 
   @override
   List<Object?> get props => [destinationId];
 }
 
 class UpdateZoom extends MapBlocEvent {
-  final double zoom;
 
   const UpdateZoom(this.zoom);
+  final double zoom;
 
   @override
   List<Object?> get props => [zoom];
@@ -75,19 +75,19 @@ class RequestMyLocation extends MapBlocEvent {
 }
 
 class UserLocationUpdated extends MapBlocEvent {
-  final LatLng position;
 
   const UserLocationUpdated(this.position);
+  final LatLng position;
 
   @override
   List<Object?> get props => [position];
 }
 
 class MapMoved extends MapBlocEvent {
-  final LatLng center;
-  final double zoom;
 
   const MapMoved(this.center, this.zoom);
+  final LatLng center;
+  final double zoom;
 
   @override
   List<Object?> get props => [center, zoom];
