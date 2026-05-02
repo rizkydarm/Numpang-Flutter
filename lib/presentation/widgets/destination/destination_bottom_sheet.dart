@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/theme/app_theme.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
-import 'package:numpang_app/presentation/widgets/destination/add_destination_fab.dart';
 import 'package:numpang_app/presentation/widgets/destination/delete_confirmation_dialog.dart';
 import 'package:numpang_app/presentation/widgets/destination/destination_list_item.dart';
-import 'package:numpang_app/presentation/widgets/destination/empty_destinations_view.dart';
 
 class DestinationBottomSheet extends StatefulWidget {
   const DestinationBottomSheet({
@@ -84,32 +81,22 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
             builder: (context, state) {
               return CustomScrollView(
                 controller: scrollController,
-                // Let DraggableScrollableSheet control physics
-                // physics: const ClampingScrollPhysics(),
                 slivers: [
                   // Drag Handle
                   SliverToBoxAdapter(
-                    child: GestureDetector(
-                      onVerticalDragEnd: (details) {
-                         
-                      },
-                      onVerticalDragUpdate: (details) {
-                        
-                      },
-                      child: Center(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? AppColors.textTertiaryDark.withValues(
-                                    alpha: 0.5,
-                                  )
-                                : AppColors.textTertiary.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          height: 4,
-                          width: 40,
+                    child: Center(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isDark
+                            ? AppColors.textTertiaryDark.withValues(
+                                alpha: 0.5,
+                              )
+                            : AppColors.textTertiary.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(2),
                         ),
+                        height: 4,
+                        width: 40,
                       ),
                     ),
                   ),
@@ -117,33 +104,27 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Destinations',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: isDark
-                                        ? AppColors.textPrimaryDark
-                                        : AppColors.textPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  state.destinations.isEmpty
-                                      ? 'No destinations'
-                                      : '${state.destinations.length} ${state.destinations.length == 1 ? 'place' : 'places'} saved',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: isDark
-                                        ? AppColors.textSecondaryDark
-                                        : AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            'Destinations',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            state.destinations.isEmpty
+                              ? 'No destinations'
+                              : '${state.destinations.length} ${state.destinations.length == 1 ? 'place' : 'places'} saved',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -155,27 +136,6 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                     const SliverFillRemaining(
                       child: Center(child: CircularProgressIndicator()),
                     )
-                  // else if (state.destinations.isEmpty)
-                  //   SliverFillRemaining(
-                  //     hasScrollBody: false,
-                  //     child: EmptyDestinationsView(
-                  //       onAddTap: () async {
-                  //         final name = await AddDestinationDialog.show(
-                  //           context,
-                  //           initialName: 'New Destination',
-                  //         );
-                  //         if (name != null && context.mounted) {
-                  //           context.read<DestinationBloc>().add(
-                  //             AddDestination(
-                  //               name: name,
-                  //               address: 'Current Location',
-                  //               position: const LatLng(-6.2088, 106.8456),
-                  //             ),
-                  //           );
-                  //         }
-                  //       },
-                  //     ),
-                  //   )
                   else
                     SliverPadding(
                       padding: const EdgeInsets.only(bottom: 24),
@@ -195,10 +155,10 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                             },
                             onDelete: () async {
                               final confirmed =
-                                  await DeleteConfirmationDialog.show(
-                                    context,
-                                    destination.name,
-                                  );
+                                await DeleteConfirmationDialog.show(
+                                  context,
+                                  destination.name,
+                                );
                               if (confirmed && context.mounted) {
                                 context.read<DestinationBloc>().add(
                                   DeleteDestination(

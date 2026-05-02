@@ -30,7 +30,7 @@ class NominatimGeocodingRepository implements GeocodingRepository {
       if (response.statusCode == 200 &&
           response.data is List &&
           response.data?.isNotEmpty == true) {
-        final result = response.data![0];
+        final result = response.data?.values.first;
         final lat = double.tryParse(result['lat'].toString());
         final lon = double.tryParse(result['lon'].toString());
 
