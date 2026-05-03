@@ -13,11 +13,13 @@ class MockMapService implements MapService {
   double? get lastMoveZoom => _lastMoveZoom;
   List<LatLng> get fittedPositions => List.unmodifiable(_fittedPositions);
 
-  @override
-  void initialize(MapController controller) {}
+  MapController? _controller;
 
   @override
-  void dispose() {}
+  set controller(MapController value) => _controller = value;
+
+  @override
+  void dispose() => _controller = null;
 
   @override
   bool get isInitialized => true;
@@ -30,7 +32,6 @@ class MockMapService implements MapService {
 
   @override
   LatLng? get center => _lastMovePosition;
-
 
   @override
   double? get zoom => _lastMoveZoom;
@@ -76,6 +77,13 @@ class MockMapService implements MapService {
           color: const Color(0xFF2196F3),
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF2196F3).withAlpha(102),
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
         ),
       ),
     );

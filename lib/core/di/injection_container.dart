@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive/hive.dart';
 import 'package:numpang_app/core/utils/dio_client.dart';
 import 'package:numpang_app/data/datasources/destination_local_datasource.dart';
 import 'package:numpang_app/data/datasources/destination_remote_datasource.dart';
 import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/data/datasources/recent_searches_local_datasource.dart';
+import 'package:numpang_app/data/models/recent_search_model.dart';
 import 'package:numpang_app/data/repositories/destination_repository_impl.dart';
 import 'package:numpang_app/data/repositories/geocoding_repository_impl.dart';
 import 'package:numpang_app/data/repositories/location_repository_impl.dart';
@@ -20,7 +24,6 @@ import 'package:numpang_app/presentation/bloc/search_bloc.dart';
 import 'package:provider/provider.dart';
 
 class InjectionContainer extends StatelessWidget {
-
   const InjectionContainer({required this.child, super.key});
   final Widget child;
 
@@ -32,6 +35,8 @@ class InjectionContainer extends StatelessWidget {
     final geocodingRepository = GeocodingRepositoryImpl(
       dio: dio,
       cache: geocodingCache,
+      mapboxAccessToken: dotenv.env['MAPBOX_ACCESS_TOKEN'],
+      geocodeXyzApiKey: dotenv.env['GEOCODE_XYZ_API_KEY'],
     );
 
     final destinationLocalDataSource = InMemoryDestinationDataSource();
@@ -52,6 +57,11 @@ class InjectionContainer extends StatelessWidget {
 
     final locationService = LocationService();
 
+    final recentSearchesBox = Hive.box<RecentSearchModel>('recent_searches');
+    final recentSearchesDataSource = RecentSearchesLocalDataSourceImpl(
+      box: recentSearchesBox,
+    );
+
     return MultiProvider(
       providers: [
         Provider<Flavor>.value(value: F.appFlavor),
@@ -66,14 +76,17 @@ class InjectionContainer extends StatelessWidget {
             create: (context) => MapBloc(locationService: locationService),
           ),
           BlocProvider(
-            create: (context) =>
-                SearchBloc(geocodingRepository: context.read()),
+            create: (context) => SearchBloc(
+              geocodingRepository: context.read(),
+              recentSearchesDataSource: recentSearchesDataSource,
+            ),
           ),
           BlocProvider(
             create: (context) => DestinationBloc(
               getDestinations: getDestinationsUseCase,
               addDestination: addDestinationUseCase,
               deleteDestination: deleteDestinationUseCase,
+              geocodingRepository: geocodingRepository,
             ),
           ),
         ],

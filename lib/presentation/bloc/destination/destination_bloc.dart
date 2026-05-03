@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 import 'package:numpang_app/domain/usecases/add_destination_usecase.dart';
 import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
 import 'package:numpang_app/domain/usecases/get_destinations_usecase.dart';
@@ -7,14 +9,15 @@ import 'package:numpang_app/presentation/bloc/destination/destination_event.dart
 import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
 
 class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
-
   DestinationBloc({
     required GetDestinationsUseCase getDestinations,
     required AddDestinationUseCase addDestination,
     required DeleteDestinationUseCase deleteDestination,
+    required GeocodingRepository geocodingRepository,
   }) : _getDestinations = getDestinations,
        _addDestination = addDestination,
        _deleteDestination = deleteDestination,
+       _geocodingRepository = geocodingRepository,
        super(DestinationState.initial()) {
     on<LoadDestinations>(_onLoadDestinations);
     on<AddDestination>(_onAddDestination);
@@ -22,6 +25,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
     on<SelectDestination>(_onSelectDestination);
     on<ClearDestinationError>(_onClearError);
     on<RefreshDestinations>(_onLoadDestinations);
+    on<LoadDestinationAddress>(_onLoadDestinationAddress);
 
     // Load destinations on init
     add(const LoadDestinations());
@@ -29,6 +33,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
   final GetDestinationsUseCase _getDestinations;
   final AddDestinationUseCase _addDestination;
   final DeleteDestinationUseCase _deleteDestination;
+  final GeocodingRepository _geocodingRepository;
 
   Future<void> _onLoadDestinations(
     DestinationEvent event,
@@ -118,5 +123,36 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
     Emitter<DestinationState> emit,
   ) {
     emit(state.copyWith(clearError: true));
+  }
+
+  Future<void> _onLoadDestinationAddress(
+    LoadDestinationAddress event,
+    Emitter<DestinationState> emit,
+  ) async {
+    // Skip if already loaded
+    if (state.destinationAddresses.containsKey(event.destinationId)) {
+      return;
+    }
+
+    final destination = state.destinations.firstWhere(
+      (d) => d.id == event.destinationId,
+      orElse: () => throw Exception('Destination not found'),
+    );
+
+    final position = LatLng(
+      destination.latitude,
+      destination.longitude,
+    );
+
+    final result = await _geocodingRepository.reverseGeocode(position);
+    result.fold(
+      (failure) => null, // Keep original address on failure
+      (address) {
+        final updatedAddresses = Map<String, String>.from(
+          state.destinationAddresses,
+        )..[event.destinationId] = address;
+        emit(state.copyWith(destinationAddresses: updatedAddresses));
+      },
+    );
   }
 }

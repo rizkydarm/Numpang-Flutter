@@ -9,6 +9,7 @@ import 'package:dartz/dartz.dart' as _i2;
 import 'package:latlong2/latlong.dart' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:numpang_app/core/errors/failures.dart' as _i5;
+import 'package:numpang_app/domain/entities/place_details.dart' as _i8;
 import 'package:numpang_app/domain/entities/place_suggestion.dart' as _i7;
 import 'package:numpang_app/domain/repositories/geocoding_repository.dart'
     as _i3;
@@ -89,4 +90,20 @@ class MockGeocodingRepository extends _i1.Mock
                 ),
           )
           as _i4.Future<_i2.Either<_i5.Failure, List<_i7.PlaceSuggestion>>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i8.PlaceDetails>> getPlaceDetails(
+    String? placeId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#getPlaceDetails, [placeId]),
+            returnValue:
+                _i4.Future<_i2.Either<_i5.Failure, _i8.PlaceDetails>>.value(
+                  _FakeEither_0<_i5.Failure, _i8.PlaceDetails>(
+                    this,
+                    Invocation.method(#getPlaceDetails, [placeId]),
+                  ),
+                ),
+          )
+          as _i4.Future<_i2.Either<_i5.Failure, _i8.PlaceDetails>>);
 }

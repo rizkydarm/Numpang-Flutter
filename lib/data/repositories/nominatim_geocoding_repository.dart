@@ -3,11 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/errors/failures.dart';
 import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/domain/entities/place_details.dart';
 import 'package:numpang_app/domain/entities/place_suggestion.dart';
 import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
 class NominatimGeocodingRepository implements GeocodingRepository {
-
   NominatimGeocodingRepository(this._dio, this._cache);
   final Dio _dio;
   final GeocodingCache _cache;
@@ -42,7 +42,7 @@ class NominatimGeocodingRepository implements GeocodingRepository {
       return const Left(ServerFailure(message: 'No results found'));
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception catch (_) {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }
@@ -75,7 +75,69 @@ class NominatimGeocodingRepository implements GeocodingRepository {
       return const Left(ServerFailure(message: 'No address found'));
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception catch (_) {
+      return const Left(UnknownFailure(message: 'Unexpected error'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PlaceDetails>> getPlaceDetails(String placeId) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        '$_baseUrl/details',
+        queryParameters: {
+          'place_id': placeId,
+          'format': 'json',
+          'addressdetails': 1,
+          'extratags': 1,
+        },
+      );
+
+      if (response.statusCode == 200 && response.data is Map) {
+        final data = response.data as Map<String, dynamic>;
+        final lat = double.tryParse(data['lat']?.toString() ?? '0') ?? 0;
+        final lon = double.tryParse(data['lon']?.toString() ?? '0') ?? 0;
+        final displayName = data['display_name']?.toString() ?? '';
+        final address = data['address'] as Map<String, dynamic>?;
+
+        final extratags = data['extratags'] as Map<String, dynamic>?;
+        final phone =
+            extratags?['phone']?.toString() ??
+            extratags?['contact:phone']?.toString();
+        final website =
+            extratags?['website']?.toString() ??
+            extratags?['contact:website']?.toString();
+        final openingHours = extratags?['opening_hours']?.toString();
+
+        final categories = <String>[];
+        final category = data['category']?.toString();
+        if (category != null && category.isNotEmpty) {
+          categories.add(category);
+        }
+        final type = data['type']?.toString();
+        if (type != null && type.isNotEmpty) {
+          categories.add(type);
+        }
+
+        return Right(
+          PlaceDetails(
+            id: placeId,
+            name: address?['name']?.toString() ?? displayName.split(',').first,
+            address: displayName,
+            latitude: lat,
+            longitude: lon,
+            phone: phone,
+            website: website,
+            openingHours: openingHours != null ? [openingHours] : null,
+            categories: categories,
+          ),
+        );
+      }
+
+      return const Left(ServerFailure(message: 'Place not found'));
+    } on DioException catch (e) {
+      return Left(_handleDioError(e));
+    } on Exception catch (_) {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }
@@ -116,7 +178,7 @@ class NominatimGeocodingRepository implements GeocodingRepository {
       return const Right([]);
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception catch (_) {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }

@@ -11,6 +11,8 @@ import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/map_state.dart';
 import 'package:numpang_app/presentation/widgets/destination/destination_widgets.dart';
 import 'package:numpang_app/presentation/widgets/map/user_location_marker.dart';
+import 'package:numpang_app/presentation/widgets/search/floating_search_bar.dart';
+import 'package:numpang_app/presentation/widgets/search/search_result_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -41,8 +43,9 @@ class _MapScreenState extends State<MapScreen> {
     _mapController = MapController();
     // Initialize MapService with controller after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MapBloc>().mapService.initialize(_mapController);
+      context.read<MapBloc>().mapService.controller = _mapController;
       context.read<MapBloc>().add(const InitializeMap());
+      context.read<MapBloc>().add(const RequestMyLocation());
     });
   }
 
@@ -69,9 +72,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           BlocBuilder<MapBloc, MapState>(
             buildWhen: (prev, curr) =>
-                prev.center != curr.center ||
-                prev.zoom != curr.zoom ||
-                prev.destinations != curr.destinations,
+              prev.center != curr.center ||
+              prev.zoom != curr.zoom ||
+              prev.destinations != curr.destinations,
             builder: (context, state) => FlutterMap(
               mapController: _mapController,
               options: MapOptions(
@@ -127,6 +130,8 @@ class _MapScreenState extends State<MapScreen> {
           ),
           _MyLocationFab(theme: theme),
           const Positioned.fill(child: DestinationBottomSheet()),
+          const FloatingSearchBar(),
+          const SearchResultPanel(),
         ],
       ),
     );
@@ -154,9 +159,8 @@ class _MapScreenState extends State<MapScreen> {
 }
 
 class _MyLocationFab extends StatelessWidget {
-  final ThemeData theme;
-
   const _MyLocationFab({required this.theme});
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {

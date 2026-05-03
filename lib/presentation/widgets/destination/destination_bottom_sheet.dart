@@ -24,9 +24,9 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
   final DraggableScrollableController _controller =
       DraggableScrollableController();
 
-  static const double _collapsedSize = 0.25;
+  static const double _collapsedSize = 0.15;
   static const double _halfSize = 0.5;
-  static const double _fullSize = 1.0;
+  static const double _fullSize = 1;
 
   @override
   void initState() {

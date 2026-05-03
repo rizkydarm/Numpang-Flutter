@@ -7,9 +7,7 @@ import 'package:numpang_app/domain/entities/destination.dart';
 class MapService {
   MapController? _controller;
 
-  void initialize(MapController controller) {
-    _controller = controller;
-  }
+  set controller(MapController value) => _controller = value;
 
   void dispose() {
     _controller?.dispose();

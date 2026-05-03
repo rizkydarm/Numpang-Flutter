@@ -57,23 +57,23 @@ class _DraggableScrollableSheetExampleState
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('DraggableScrollableSheet Sample')),
       body: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final double viewHeight = constraints.maxHeight;
+        builder: (context, constraints) {
+          final viewHeight = constraints.maxHeight;
       
           return DraggableScrollableSheet(
             initialChildSize: _sheetPosition,
-            builder: (BuildContext context, ScrollController scrollController) {
+            builder: (context, scrollController) {
               return ColoredBox(
                 color: Colors.white,
                 child: Column(
                   children: <Widget>[
                     Grabber(
-                      onVerticalDragUpdate: (DragUpdateDetails details) {
+                      onVerticalDragUpdate: (details) {
                         setState(() {
                           _dragPosition -= details.delta.dy / viewHeight;
                           _sheetPosition = _dragPosition.clamp(
@@ -87,7 +87,7 @@ class _DraggableScrollableSheetExampleState
                       child: ListView.builder(
                         controller: scrollController,
                         itemCount: 25,
-                        itemBuilder: (BuildContext context, int index) {
+                        itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(
                               'Item $index',
@@ -112,13 +112,13 @@ class _DraggableScrollableSheetExampleState
 ///
 /// This is typically only used in desktop or web platforms.
 class Grabber extends StatelessWidget {
-  const Grabber({super.key, required this.onVerticalDragUpdate});
+  const Grabber({required this.onVerticalDragUpdate, super.key});
 
   final ValueChanged<DragUpdateDetails> onVerticalDragUpdate;
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onVerticalDragUpdate: onVerticalDragUpdate,
@@ -128,12 +128,12 @@ class Grabber extends StatelessWidget {
         child: Align(
           alignment: Alignment.topCenter,
           child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            width: 32.0,
-            height: 4.0,
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            width: 32,
+            height: 4,
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8.0),
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
         ),
