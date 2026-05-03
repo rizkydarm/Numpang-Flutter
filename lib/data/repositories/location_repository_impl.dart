@@ -12,12 +12,25 @@ enum LocationPermissionStatus {
 }
 
 class LocationService {
-
   LocationService({GeolocatorPlatform? geolocator})
     : _geolocator = geolocator ?? GeolocatorPlatform.instance;
   final GeolocatorPlatform _geolocator;
+  Future<LocationPermissionStatus>? _permissionRequest;
 
   Future<LocationPermissionStatus> checkPermission() async {
+    // Return existing request if already in progress
+    if (_permissionRequest != null) {
+      return _permissionRequest!;
+    }
+
+    // Create new request and track it
+    _permissionRequest = _doCheckPermission();
+    final result = await _permissionRequest!;
+    _permissionRequest = null;
+    return result;
+  }
+
+  Future<LocationPermissionStatus> _doCheckPermission() async {
     final serviceEnabled = await _geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       return LocationPermissionStatus.serviceDisabled;

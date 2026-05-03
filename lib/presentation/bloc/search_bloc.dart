@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/data/datasources/recent_searches_local_datasource.dart';
@@ -61,13 +63,19 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     final result = await _geocodingRepository.autocomplete(event.query);
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(
-          isLoading: false,
+      (failure) {
+        log(
+          '[SearchBloc] Autocomplete error: ${failure.message}',
           error: failure,
-          suggestions: [],
-        ),
-      ),
+        );
+        emit(
+          state.copyWith(
+            isLoading: false,
+            error: failure,
+            suggestions: [],
+          ),
+        );
+      },
       (suggestions) => emit(
         state.copyWith(
           isLoading: false,
@@ -98,31 +106,44 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     final result = await _geocodingRepository.searchAddress(event.query);
 
     await result.fold(
-      (failure) async => emit(
-        state.copyWith(
-          isLoading: false,
-          error: failure,
-        ),
-      ),
+      (failure) async {
+        log('[SearchBloc] Search error: ${failure.message}', error: failure);
+        emit(
+          state.copyWith(
+            isLoading: false,
+            error: failure,
+          ),
+        );
+      },
       (position) async {
+        log('[SearchBloc] Found position: $position');
         final reverseResult = await _geocodingRepository.reverseGeocode(
           position,
         );
 
         reverseResult.fold(
-          (failure) => emit(
-            state.copyWith(
-              isLoading: false,
+          (failure) {
+            log(
+              '[SearchBloc] Reverse geocode error: ${failure.message}',
               error: failure,
-            ),
-          ),
-          (address) => emit(
-            state.copyWith(
-              isLoading: false,
-              resultPosition: position,
-              resultAddress: address,
-            ),
-          ),
+            );
+            emit(
+              state.copyWith(
+                isLoading: false,
+                error: failure,
+              ),
+            );
+          },
+          (address) {
+            log('[SearchBloc] Found address: $address');
+            emit(
+              state.copyWith(
+                isLoading: false,
+                resultPosition: position,
+                resultAddress: address,
+              ),
+            );
+          },
         );
       },
     );

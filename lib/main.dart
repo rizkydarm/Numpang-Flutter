@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:numpang_app/app.dart';
@@ -11,6 +12,8 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      await dotenv.load();
 
       await Hive.initFlutter();
       Hive.registerAdapter(RecentSearchModelAdapter());

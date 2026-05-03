@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:numpang_app/core/theme/app_theme.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
 
-class DestinationListItem extends StatelessWidget {
+class DestinationListItem extends StatefulWidget {
   const DestinationListItem({
     required this.destination,
     required this.onTap,
@@ -16,42 +20,64 @@ class DestinationListItem extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
+  State<DestinationListItem> createState() => _DestinationListItemState();
+}
+
+class _DestinationListItemState extends State<DestinationListItem> {
+  @override
+  void initState() {
+    super.initState();
+    _loadReverseGeocodedAddress();
+  }
+
+  void _loadReverseGeocodedAddress() {
+    context.read<DestinationBloc>().add(
+      LoadDestinationAddress(destinationId: widget.destination.id),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Dismissible(
-      key: Key(destination.id),
+      key: Key(widget.destination.id),
       direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDelete(),
+      onDismissed: (_) => widget.onDelete(),
       confirmDismiss: (_) async {
         // Return true to confirm, false to cancel
         // Confirmation dialog handled by parent
         return true;
       },
-      background: Container(
+      background: Align(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
-        decoration: BoxDecoration(
-          color: Colors.red.shade700,
-          borderRadius: BorderRadius.circular(12),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.red.shade700,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Padding(
+            padding: EdgeInsets.only(right: 24),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: Card(
+        clipBehavior: Clip.antiAlias,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        elevation: isSelected ? 2 : 0,
-        color: isSelected
+        elevation: widget.isSelected ? 2 : 0,
+        color: widget.isSelected
             ? AppColors.primary.withValues(alpha: 0.1)
             : (isDark ? AppColors.surfaceDark : Colors.white),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: isSelected
+          side: widget.isSelected
               ? const BorderSide(color: AppColors.primary)
               : BorderSide.none,
         ),
         child: ListTile(
-          onTap: onTap,
+          onTap: widget.onTap,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 8,
@@ -66,7 +92,7 @@ class DestinationListItem extends StatelessWidget {
             child: const Icon(Icons.location_on, color: AppColors.primary),
           ),
           title: Text(
-            destination.name,
+            widget.destination.name,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
@@ -78,19 +104,13 @@ class DestinationListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 4),
-              Text(
-                destination.address,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.textSecondary,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              _DestinationAddressText(
+                destinationId: widget.destination.id,
+                fallbackAddress: widget.destination.address,
               ),
               const SizedBox(height: 4),
               Text(
-                _formatDate(destination.createdAt),
+                _formatDate(widget.destination.createdAt),
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontSize: 11,
                   color: isDark
@@ -128,5 +148,38 @@ class DestinationListItem extends StatelessWidget {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+}
+
+class _DestinationAddressText extends StatelessWidget {
+  const _DestinationAddressText({
+    required this.destinationId,
+    required this.fallbackAddress,
+  });
+
+  final String destinationId;
+  final String fallbackAddress;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<DestinationBloc, DestinationState>(
+      buildWhen: (previous, current) =>
+          previous.destinationAddresses[destinationId] !=
+          current.destinationAddresses[destinationId],
+      builder: (context, state) {
+        final address = state.destinationAddresses[destinationId];
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Text(
+          address ?? fallbackAddress,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondary,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        );
+      },
+    );
   }
 }

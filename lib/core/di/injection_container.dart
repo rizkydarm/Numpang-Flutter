@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive/hive.dart';
 import 'package:numpang_app/core/utils/dio_client.dart';
 import 'package:numpang_app/data/datasources/destination_local_datasource.dart';
@@ -34,6 +35,8 @@ class InjectionContainer extends StatelessWidget {
     final geocodingRepository = GeocodingRepositoryImpl(
       dio: dio,
       cache: geocodingCache,
+      mapboxAccessToken: dotenv.env['MAPBOX_ACCESS_TOKEN'],
+      geocodeXyzApiKey: dotenv.env['GEOCODE_XYZ_API_KEY'],
     );
 
     final destinationLocalDataSource = InMemoryDestinationDataSource();
@@ -83,6 +86,7 @@ class InjectionContainer extends StatelessWidget {
               getDestinations: getDestinationsUseCase,
               addDestination: addDestinationUseCase,
               deleteDestination: deleteDestinationUseCase,
+              geocodingRepository: geocodingRepository,
             ),
           ),
         ],

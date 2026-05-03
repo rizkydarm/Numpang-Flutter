@@ -16,7 +16,6 @@ class LoadDestinations extends DestinationEvent {
 
 /// Add a new destination
 class AddDestination extends DestinationEvent {
-
   const AddDestination({
     required this.name,
     required this.address,
@@ -31,7 +30,8 @@ class AddDestination extends DestinationEvent {
 }
 
 /// Delete a destination by ID
-class DeleteDestination extends DestinationEvent { // For confirmation dialog
+class DeleteDestination extends DestinationEvent {
+  // For confirmation dialog
 
   const DeleteDestination({
     required this.id,
@@ -46,7 +46,6 @@ class DeleteDestination extends DestinationEvent { // For confirmation dialog
 
 /// Select a destination to highlight on map
 class SelectDestination extends DestinationEvent {
-
   const SelectDestination(this.destination);
   final Destination? destination;
 
@@ -62,4 +61,13 @@ class ClearDestinationError extends DestinationEvent {
 /// Refresh destinations list
 class RefreshDestinations extends DestinationEvent {
   const RefreshDestinations();
+}
+
+/// Load reverse geocoded address for a destination
+class LoadDestinationAddress extends DestinationEvent {
+  const LoadDestinationAddress({required this.destinationId});
+  final String destinationId;
+
+  @override
+  List<Object?> get props => [destinationId];
 }
