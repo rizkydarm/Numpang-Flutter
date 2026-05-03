@@ -26,7 +26,7 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
 
   static const double _collapsedSize = 0.25;
   static const double _halfSize = 0.5;
-  static const double _fullSize = 1.0;
+  static const double _fullSize = 1;
 
   @override
   void initState() {
@@ -41,8 +41,6 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
     return DraggableScrollableSheet(
       controller: _controller,
       initialChildSize: _collapsedSize,
-      minChildSize: _collapsedSize,
-      maxChildSize: _fullSize,
       snap: true,
       snapSizes: const [_collapsedSize, _halfSize, _fullSize],
       builder: (context, scrollController) {

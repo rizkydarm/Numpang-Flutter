@@ -35,8 +35,8 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
   MapService get mapService => _mapService;
 
   @override
-  Future<void> close() {
-    _locationSubscription?.cancel();
+  Future<void> close() async {
+    await _locationSubscription?.cancel();
     return super.close();
   }
 
@@ -68,7 +68,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapState> {
           ),
         );
       },
-      onError: (error) {
+      onError: (Object error) {
         debugPrint('Location stream error: $error');
       },
     );

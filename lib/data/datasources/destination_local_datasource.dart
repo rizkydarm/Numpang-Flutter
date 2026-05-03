@@ -29,14 +29,14 @@ class DestinationLocalDataSourceImpl implements DestinationLocalDataSource {
       return [];
     }
 
-    try {
-      final List<dynamic> jsonList = jsonDecode(jsonString);
-      return jsonList
-          .map((json) => DestinationModel.fromJson(json as Map<String, dynamic>))
-          .toList();
-    } catch (e) {
-      return [];
-    }
+      try {
+        final jsonList = jsonDecode(jsonString) as List<dynamic>;
+        return jsonList
+            .map((json) => DestinationModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } on FormatException {
+        return [];
+      }
   }
 
   @override

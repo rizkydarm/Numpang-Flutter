@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/errors/failures.dart';
+import 'package:numpang_app/data/models/recent_search_model.dart';
 import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 class SearchState extends Equatable {
-
   const SearchState({
     this.query = '',
     this.suggestions = const [],
@@ -13,6 +13,8 @@ class SearchState extends Equatable {
     this.selectedSuggestion,
     this.resultPosition,
     this.resultAddress,
+    this.recentSearches = const [],
+    this.isLoadingRecent = false,
   });
 
   factory SearchState.initial() {
@@ -25,6 +27,8 @@ class SearchState extends Equatable {
   final PlaceSuggestion? selectedSuggestion;
   final LatLng? resultPosition;
   final String? resultAddress;
+  final List<RecentSearchModel> recentSearches;
+  final bool isLoadingRecent;
 
   SearchState copyWith({
     String? query,
@@ -35,27 +39,34 @@ class SearchState extends Equatable {
     LatLng? resultPosition,
     String? resultAddress,
     bool clearSelected = false,
+    List<RecentSearchModel>? recentSearches,
+    bool? isLoadingRecent,
   }) {
     return SearchState(
       query: query ?? this.query,
       suggestions: suggestions ?? this.suggestions,
       isLoading: isLoading ?? this.isLoading,
       error: error,
-      selectedSuggestion:
-          clearSelected ? null : (selectedSuggestion ?? this.selectedSuggestion),
+      selectedSuggestion: clearSelected
+          ? null
+          : (selectedSuggestion ?? this.selectedSuggestion),
       resultPosition: resultPosition ?? this.resultPosition,
       resultAddress: resultAddress ?? this.resultAddress,
+      recentSearches: recentSearches ?? this.recentSearches,
+      isLoadingRecent: isLoadingRecent ?? this.isLoadingRecent,
     );
   }
 
   @override
   List<Object?> get props => [
-        query,
-        suggestions,
-        isLoading,
-        error,
-        selectedSuggestion,
-        resultPosition,
-        resultAddress,
-      ];
+    query,
+    suggestions,
+    isLoading,
+    error,
+    selectedSuggestion,
+    resultPosition,
+    resultAddress,
+    recentSearches,
+    isLoadingRecent,
+  ];
 }

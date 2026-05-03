@@ -82,8 +82,6 @@ class LRUCache<K, V> {
         .where((e) => now.difference(e.value.timestamp) > ttl!)
         .map((e) => e.key)
         .toList();
-    for (final key in expired) {
-      _remove(key);
-    }
+    expired.forEach(_remove);
   }
 }

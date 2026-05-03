@@ -41,7 +41,7 @@ class _MapScreenState extends State<MapScreen> {
     _mapController = MapController();
     // Initialize MapService with controller after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MapBloc>().mapService.initialize(_mapController);
+      context.read<MapBloc>().mapService.controller = _mapController;
       context.read<MapBloc>().add(const InitializeMap());
     });
   }
@@ -154,9 +154,8 @@ class _MapScreenState extends State<MapScreen> {
 }
 
 class _MyLocationFab extends StatelessWidget {
-  final ThemeData theme;
-
   const _MyLocationFab({required this.theme});
+  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {

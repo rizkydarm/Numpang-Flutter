@@ -3,11 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/errors/failures.dart';
 import 'package:numpang_app/data/datasources/geocoding_cache.dart';
+import 'package:numpang_app/domain/entities/place_details.dart';
 import 'package:numpang_app/domain/entities/place_suggestion.dart';
 import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 
 class MapboxGeocodingRepository implements GeocodingRepository {
-
   MapboxGeocodingRepository(this._dio, this._cache, this._accessToken);
   final Dio _dio;
   final GeocodingCache _cache;
@@ -17,7 +17,7 @@ class MapboxGeocodingRepository implements GeocodingRepository {
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/forward',
         queryParameters: {
           'q': query,
@@ -26,8 +26,9 @@ class MapboxGeocodingRepository implements GeocodingRepository {
         },
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        final features = response.data['features'] as List?;
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data!;
+        final features = data['features'] as List?;
         if (features != null && features.isNotEmpty) {
           final geometry = features[0]['geometry'] as Map?;
           if (geometry != null) {
@@ -46,7 +47,7 @@ class MapboxGeocodingRepository implements GeocodingRepository {
       return const Left(ServerFailure(message: 'No results found'));
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }
@@ -59,7 +60,7 @@ class MapboxGeocodingRepository implements GeocodingRepository {
     }
 
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/reverse',
         queryParameters: {
           'longitude': position.longitude,
@@ -68,8 +69,9 @@ class MapboxGeocodingRepository implements GeocodingRepository {
         },
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        final features = response.data['features'] as List?;
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data!;
+        final features = data['features'] as List?;
         if (features != null && features.isNotEmpty) {
           final properties = features[0]['properties'] as Map?;
           final fullAddress = properties?['full_address'] as String?;
@@ -83,15 +85,68 @@ class MapboxGeocodingRepository implements GeocodingRepository {
       return const Left(ServerFailure(message: 'No address found'));
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }
 
   @override
-  Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(String input) async {
+  Future<Either<Failure, PlaceDetails>> getPlaceDetails(String placeId) async {
     try {
-      final response = await _dio.get(
+      final response = await _dio.get<Map<String, dynamic>>(
+        '$_baseUrl/retrieve/\$placeId',
+        queryParameters: {'access_token': _accessToken},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data!;
+        final features = data['features'] as List?;
+        if (features != null && features.isNotEmpty) {
+          final feature = features[0] as Map;
+          final properties = feature['properties'] as Map? ?? {};
+          final geometry = feature['geometry'] as Map? ?? {};
+          final coordinates = geometry['coordinates'] as List? ?? [0, 0];
+
+          final name = properties['name']?.toString() ?? '';
+          final fullAddress = properties['full_address']?.toString() ?? '';
+          final lon = double.tryParse(coordinates[0].toString()) ?? 0;
+          final lat = double.tryParse(coordinates[1].toString()) ?? 0;
+          final context = properties['context'] as Map? ?? {};
+
+          final categories = <String>[];
+          final poi = context['poi'] as Map?;
+          final category = poi?['category']?.toString();
+          if (category != null) {
+            categories.add(category);
+          }
+
+          return Right(
+            PlaceDetails(
+              id: placeId,
+              name: name,
+              address: fullAddress,
+              latitude: lat,
+              longitude: lon,
+              categories: categories,
+            ),
+          );
+        }
+      }
+
+      return const Left(ServerFailure(message: 'Place not found'));
+    } on DioException catch (e) {
+      return Left(_handleDioError(e));
+    } on Exception {
+      return const Left(UnknownFailure(message: 'Unexpected error'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(
+    String input,
+  ) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
         '$_baseUrl/forward',
         queryParameters: {
           'q': input,
@@ -101,8 +156,9 @@ class MapboxGeocodingRepository implements GeocodingRepository {
         },
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        final features = response.data['features'] as List?;
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data!;
+        final features = data['features'] as List?;
         if (features != null) {
           final results = features.map((item) {
             final id = item['id']?.toString() ?? '';
@@ -131,7 +187,7 @@ class MapboxGeocodingRepository implements GeocodingRepository {
       return const Right([]);
     } on DioException catch (e) {
       return Left(_handleDioError(e));
-    } catch (e) {
+    } on Exception {
       return const Left(UnknownFailure(message: 'Unexpected error'));
     }
   }

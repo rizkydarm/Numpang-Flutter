@@ -367,22 +367,22 @@ MAPBOX_API_KEY=your_key_here
 ### Phase 4: Destination Management (Days 12-16)
 
 **Agent A: BLoC Implementation**
-- [ ] Create `DestinationBloc` with all events/states
-- [ ] Wire use cases to BLoC handlers
-- [ ] Implement error handling with Either type
-- [ ] Add state persistence (save/restore)
-- [ ] Write BLoC tests with `bloc_test`
-- [ ] Achieve >80% test coverage
+- [x] Create `DestinationBloc` with all events/states
+- [x] Wire use cases to BLoC handlers
+- [x] Implement error handling with Either type
+- [x] Add state persistence (save/restore)
+- [x] Write BLoC tests with `bloc_test`
+- [x] Achieve >80% test coverage
 
 **Bottom Sheet UI**
-- [ ] Create `DestinationBottomSheet` widget
-- [ ] Implement 3-state drag handle (Collapsed/Half/Full)
-- [ ] Create destination list item widget
-- [ ] Add swipe-to-delete gesture
-- [ ] Add delete confirmation dialog
-- [ ] Implement empty state UI
-- [ ] Add FAB for manual add from current position
-- [ ] Connect BLoC to UI with `BlocBuilder`/`BlocListener`
+- [x] Create `DestinationBottomSheet` widget
+- [x] Implement 3-state drag handle (Collapsed/Half/Full)
+- [x] Create destination list item widget
+- [x] Add swipe-to-delete gesture
+- [x] Add delete confirmation dialog
+- [x] Implement empty state UI
+- [x] Add FAB for manual add from current position
+- [x] Connect BLoC to UI with `BlocBuilder`/`BlocListener`
 
 **Milestone M4**: Full CRUD flow works (add via tap, delete from list)
 
