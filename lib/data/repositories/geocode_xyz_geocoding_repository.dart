@@ -327,4 +327,9 @@ class GeocodeXyzGeocodingRepository implements GeocodingRepository {
       code: e.response?.statusCode,
     );
   }
+
+  @override
+  void setPrimaryProvider(String provider) {
+    // Geocode.xyz is always the primary for this repository
+  }
 }

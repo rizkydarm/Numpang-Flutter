@@ -3,10 +3,10 @@ import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 class AutocompleteDropdown extends StatelessWidget {
   const AutocompleteDropdown({
-    super.key,
     required this.suggestions,
     required this.isLoading,
     required this.onSuggestionSelected,
+    super.key,
   });
 
   final List<PlaceSuggestion> suggestions;

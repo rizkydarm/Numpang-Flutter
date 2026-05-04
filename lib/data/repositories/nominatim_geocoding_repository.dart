@@ -199,4 +199,9 @@ class NominatimGeocodingRepository implements GeocodingRepository {
       code: e.response?.statusCode,
     );
   }
+
+  @override
+  void setPrimaryProvider(String provider) {
+    // Nominatim is always the primary for this repository
+  }
 }

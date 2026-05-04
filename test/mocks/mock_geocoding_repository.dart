@@ -89,4 +89,9 @@ class MockGeocodingRepository implements GeocodingRepository {
     shouldFail = false;
     failureToReturn = null;
   }
+
+  @override
+  void setPrimaryProvider(String provider) {
+    // Mock doesn't support provider switching
+  }
 }

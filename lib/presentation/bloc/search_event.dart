@@ -69,3 +69,11 @@ class RemoveRecentSearch extends SearchEvent {
 class ClearRecentSearches extends SearchEvent {
   const ClearRecentSearches();
 }
+
+class SetGeocodingProvider extends SearchEvent {
+  const SetGeocodingProvider(this.provider);
+  final String provider; // 'mapbox', 'nominatim', 'geocodeXyz'
+
+  @override
+  List<Object?> get props => [provider];
+}

@@ -9,10 +9,12 @@ import 'package:numpang_app/presentation/bloc/destination/destination_event.dart
 import 'package:numpang_app/presentation/bloc/map_bloc.dart';
 import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/map_state.dart';
+import 'package:numpang_app/presentation/bloc/search_bloc.dart';
+import 'package:numpang_app/presentation/bloc/search_event.dart';
+import 'package:numpang_app/presentation/bloc/search_state.dart';
 import 'package:numpang_app/presentation/widgets/destination/destination_widgets.dart';
 import 'package:numpang_app/presentation/widgets/map/user_location_marker.dart';
 import 'package:numpang_app/presentation/widgets/search/floating_search_bar.dart';
-import 'package:numpang_app/presentation/widgets/search/search_result_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -21,7 +23,93 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(F.title)),
+      appBar: AppBar(
+        title: Text(F.title),
+        actions: [
+          BlocBuilder<SearchBloc, SearchState>(
+            buildWhen: (p, n) => p.selectedProvider != n.selectedProvider,
+            builder: (context, state) {
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.api),
+                tooltip: 'Select Geocoding Provider',
+                onSelected: (provider) {
+                  context.read<SearchBloc>().add(
+                    SetGeocodingProvider(provider),
+                  );
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'mapbox',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          color: state.selectedProvider == 'mapbox'
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Mapbox',
+                          style: TextStyle(
+                            fontWeight: state.selectedProvider == 'mapbox'
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'nominatim',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.map,
+                          color: state.selectedProvider == 'nominatim'
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Nominatim',
+                          style: TextStyle(
+                            fontWeight: state.selectedProvider == 'nominatim'
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'geocodeXyz',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.location_searching,
+                          color: state.selectedProvider == 'geocodeXyz'
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Geocode.xyz',
+                          style: TextStyle(
+                            fontWeight: state.selectedProvider == 'geocodeXyz'
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
       body: const MapScreen(),
     );
   }
@@ -72,9 +160,9 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           BlocBuilder<MapBloc, MapState>(
             buildWhen: (prev, curr) =>
-              prev.center != curr.center ||
-              prev.zoom != curr.zoom ||
-              prev.destinations != curr.destinations,
+                prev.center != curr.center ||
+                prev.zoom != curr.zoom ||
+                prev.destinations != curr.destinations,
             builder: (context, state) => FlutterMap(
               mapController: _mapController,
               options: MapOptions(
@@ -131,7 +219,6 @@ class _MapScreenState extends State<MapScreen> {
           _MyLocationFab(theme: theme),
           const Positioned.fill(child: DestinationBottomSheet()),
           const FloatingSearchBar(),
-          const SearchResultPanel(),
         ],
       ),
     );

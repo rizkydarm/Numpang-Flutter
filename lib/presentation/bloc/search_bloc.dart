@@ -25,6 +25,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<AddRecentSearch>(_onAddRecentSearch);
     on<RemoveRecentSearch>(_onRemoveRecentSearch);
     on<ClearRecentSearches>(_onClearRecentSearches);
+    on<SetGeocodingProvider>(_onSetGeocodingProvider);
   }
   final GeocodingRepository _geocodingRepository;
   final RecentSearchesLocalDataSource? _recentSearchesDataSource;
@@ -223,5 +224,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
     await _recentSearchesDataSource.clearAllSearches();
     emit(state.copyWith(recentSearches: []));
+  }
+
+  void _onSetGeocodingProvider(
+    SetGeocodingProvider event,
+    Emitter<SearchState> emit,
+  ) {
+    _geocodingRepository.setPrimaryProvider(event.provider);
+    emit(state.copyWith(selectedProvider: event.provider));
   }
 }

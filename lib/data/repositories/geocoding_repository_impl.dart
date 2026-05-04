@@ -34,7 +34,20 @@ class GeocodingRepositoryImpl implements GeocodingRepository {
   final NominatimGeocodingRepository _nominatimRepo;
   final MapboxGeocodingRepository? _mapboxRepo;
   final GeocodeXyzGeocodingRepository _geocodeXyzRepo;
-  final GeocodingProvider _primaryProvider;
+  GeocodingProvider _primaryProvider;
+
+  /// Change the primary geocoding provider at runtime
+  @override
+  void setPrimaryProvider(String provider) {
+    switch (provider) {
+      case 'mapbox':
+        _primaryProvider = GeocodingProvider.mapbox;
+      case 'nominatim':
+        _primaryProvider = GeocodingProvider.nominatim;
+      case 'geocodeXyz':
+        _primaryProvider = GeocodingProvider.geocodeXyz;
+    }
+  }
 
   @override
   Future<Either<Failure, LatLng>> searchAddress(String query) async {

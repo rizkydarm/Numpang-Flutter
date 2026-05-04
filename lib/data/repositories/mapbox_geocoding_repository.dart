@@ -208,4 +208,9 @@ class MapboxGeocodingRepository implements GeocodingRepository {
       code: e.response?.statusCode,
     );
   }
+
+  @override
+  void setPrimaryProvider(String provider) {
+    // Mapbox is always the primary for this repository
+  }
 }

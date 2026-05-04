@@ -9,4 +9,7 @@ abstract class GeocodingRepository {
   Future<Either<Failure, String>> reverseGeocode(LatLng position);
   Future<Either<Failure, List<PlaceSuggestion>>> autocomplete(String input);
   Future<Either<Failure, PlaceDetails>> getPlaceDetails(String placeId);
+
+  /// Optional: Set the primary geocoding provider (mapbox, nominatim, geocodeXyz)
+  void setPrimaryProvider(String provider) {}
 }

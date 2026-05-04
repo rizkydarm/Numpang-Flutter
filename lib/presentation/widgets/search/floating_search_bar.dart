@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/errors/failures.dart';
 import 'package:numpang_app/domain/entities/place_suggestion.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
+import 'package:numpang_app/presentation/bloc/map_bloc.dart';
+import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/search_bloc.dart';
 import 'package:numpang_app/presentation/bloc/search_event.dart';
 import 'package:numpang_app/presentation/bloc/search_state.dart';
@@ -93,18 +98,78 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                   suggestions: state.suggestions,
                   isLoading: state.isLoading,
                   onSuggestionSelected: (suggestion) {
-                    context.read<SearchBloc>().add(
-                      SuggestionSelected(suggestion),
-                    );
                     _controller.clear();
                     _focusNode.unfocus();
                     setState(() => _isDropdownVisible = false);
+                    _showPlaceDialog(context, suggestion);
                   },
                 );
               },
             ),
         ],
       ),
+    );
+  }
+
+  void _showPlaceDialog(BuildContext context, PlaceSuggestion suggestion) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final destinationBloc = context.read<DestinationBloc>();
+    final mapBloc = context.read<MapBloc>();
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: colorScheme.surfaceContainerHigh,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text(
+            suggestion.name,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          content: Text(
+            suggestion.address,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: colorScheme.onSurfaceVariant),
+              ),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                final point = LatLng(suggestion.latitude, suggestion.longitude);
+                destinationBloc.add(
+                  AddDestination(
+                    name: suggestion.name,
+                    address:
+                        '${suggestion.latitude.toStringAsFixed(4)}, ${suggestion.longitude.toStringAsFixed(4)}',
+                    position: point,
+                  ),
+                );
+                mapBloc.add(TapOnMap(point, address: suggestion.name));
+                Navigator.of(dialogContext).pop();
+              },
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add'),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFFFCA28),
+                foregroundColor: const Color(0xFF705600),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

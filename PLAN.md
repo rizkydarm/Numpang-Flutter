@@ -398,8 +398,6 @@ MAPBOX_API_KEY=your_key_here
 **Agent B: Search UI**
 - [ ] Create `FloatingSearchBar` widget
 - [ ] Implement autocomplete dropdown
-- [ ] Add voice search button (placeholder)
-- [ ] Create `CategoryChips` horizontal scroll
 - [ ] Implement search result selection handler
 - [ ] Add "Add to Destinations" button on selection
 - [ ] Show loading state during search

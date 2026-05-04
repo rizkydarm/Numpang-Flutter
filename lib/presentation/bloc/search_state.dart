@@ -15,6 +15,7 @@ class SearchState extends Equatable {
     this.resultAddress,
     this.recentSearches = const [],
     this.isLoadingRecent = false,
+    this.selectedProvider = 'mapbox', // Default to Mapbox
   });
 
   factory SearchState.initial() {
@@ -29,6 +30,7 @@ class SearchState extends Equatable {
   final String? resultAddress;
   final List<RecentSearchModel> recentSearches;
   final bool isLoadingRecent;
+  final String selectedProvider;
 
   SearchState copyWith({
     String? query,
@@ -41,6 +43,7 @@ class SearchState extends Equatable {
     bool clearSelected = false,
     List<RecentSearchModel>? recentSearches,
     bool? isLoadingRecent,
+    String? selectedProvider,
   }) {
     return SearchState(
       query: query ?? this.query,
@@ -54,6 +57,7 @@ class SearchState extends Equatable {
       resultAddress: resultAddress ?? this.resultAddress,
       recentSearches: recentSearches ?? this.recentSearches,
       isLoadingRecent: isLoadingRecent ?? this.isLoadingRecent,
+      selectedProvider: selectedProvider ?? this.selectedProvider,
     );
   }
 
@@ -68,5 +72,6 @@ class SearchState extends Equatable {
     resultAddress,
     recentSearches,
     isLoadingRecent,
+    selectedProvider,
   ];
 }
