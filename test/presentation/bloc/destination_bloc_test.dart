@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:numpang_app/core/errors/failures.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/repositories/destination_repository.dart';
 import 'package:numpang_app/domain/usecases/add_destination_usecase.dart';
 import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
 import 'package:numpang_app/domain/usecases/get_destinations_usecase.dart';
@@ -20,10 +21,13 @@ class MockAddDestinationUseCase extends Mock implements AddDestinationUseCase {}
 class MockDeleteDestinationUseCase extends Mock
     implements DeleteDestinationUseCase {}
 
+class MockDestinationRepository extends Mock implements DestinationRepository {}
+
 void main() {
   late MockGetDestinationsUseCase mockGetDestinations;
   late MockAddDestinationUseCase mockAddDestination;
   late MockDeleteDestinationUseCase mockDeleteDestination;
+  late MockDestinationRepository mockDestinationRepository;
   late DestinationBloc bloc;
 
   final testDestination = Destination(
@@ -41,6 +45,7 @@ void main() {
     mockGetDestinations = MockGetDestinationsUseCase();
     mockAddDestination = MockAddDestinationUseCase();
     mockDeleteDestination = MockDeleteDestinationUseCase();
+    mockDestinationRepository = MockDestinationRepository();
 
     // Register fallback value for any() matcher with Destination
     registerFallbackValue(testDestination);
@@ -54,6 +59,7 @@ void main() {
       getDestinations: mockGetDestinations,
       addDestination: mockAddDestination,
       deleteDestination: mockDeleteDestination,
+      destinationRepository: mockDestinationRepository,
     );
   });
 
@@ -124,6 +130,7 @@ void main() {
             getDestinations: mockGetDestinations,
             addDestination: mockAddDestination,
             deleteDestination: mockDeleteDestination,
+            destinationRepository: mockDestinationRepository,
           );
         },
         act: (bloc) => bloc.add(
@@ -168,6 +175,7 @@ void main() {
             getDestinations: mockGetDestinations,
             addDestination: mockAddDestination,
             deleteDestination: mockDeleteDestination,
+            destinationRepository: mockDestinationRepository,
           );
         },
         act: (bloc) => bloc.add(
@@ -301,6 +309,7 @@ void main() {
             getDestinations: mockGetDestinations,
             addDestination: mockAddDestination,
             deleteDestination: mockDeleteDestination,
+            destinationRepository: mockDestinationRepository,
           );
         },
         act: (bloc) => bloc.add(SelectDestination(testDestination)),
@@ -333,6 +342,7 @@ void main() {
             getDestinations: mockGetDestinations,
             addDestination: mockAddDestination,
             deleteDestination: mockDeleteDestination,
+            destinationRepository: mockDestinationRepository,
           );
         },
         act: (bloc) => bloc.add(const SelectDestination(null)),
@@ -364,6 +374,7 @@ void main() {
             getDestinations: mockGetDestinations,
             addDestination: mockAddDestination,
             deleteDestination: mockDeleteDestination,
+            destinationRepository: mockDestinationRepository,
           );
         },
         act: (bloc) => bloc.add(const ClearDestinationError()),

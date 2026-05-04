@@ -6,6 +6,7 @@ import 'package:numpang_app/domain/entities/destination.dart';
 import 'package:numpang_app/flavors.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
+import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
 import 'package:numpang_app/presentation/bloc/map_bloc.dart';
 import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/map_state.dart';
@@ -31,7 +32,7 @@ class MyHomePage extends StatelessWidget {
             buildWhen: (p, n) => p.selectedProvider != n.selectedProvider,
             builder: (context, state) {
               return PopupMenuButton<String>(
-                icon: const Icon(Icons.api),
+                icon: const Icon(Icons.settings),
                 tooltip: 'Select Geocoding Provider',
                 onSelected: (provider) {
                   context.read<SearchBloc>().add(
@@ -159,9 +160,7 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           BlocBuilder<MapBloc, MapState>(
             buildWhen: (prev, curr) =>
-                prev.center != curr.center ||
-                prev.zoom != curr.zoom ||
-                prev.destinations != curr.destinations,
+                prev.center != curr.center || prev.zoom != curr.zoom,
             builder: (context, state) => FlutterMap(
               mapController: _mapController,
               options: MapOptions(
@@ -192,10 +191,14 @@ class _MapScreenState extends State<MapScreen> {
                   userAgentPackageName: 'com.rizkyeky.numpang',
                   maxZoom: 19,
                 ),
-                MarkerLayer(
-                  markers: _buildDestinationMarkers(
-                    context,
-                    state.destinations,
+                BlocBuilder<DestinationBloc, DestinationState>(
+                  buildWhen: (prev, curr) =>
+                      prev.destinations != curr.destinations,
+                  builder: (context, destState) => MarkerLayer(
+                    markers: _buildDestinationMarkers(
+                      context,
+                      destState.destinations,
+                    ),
                   ),
                 ),
                 if (state.isFollowingUser)
@@ -215,9 +218,9 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
+          const FloatingSearchBar(),
           const _ResponsiveMyLocationFab(),
           const _ResponsiveBottomSheetWrapper(),
-          const FloatingSearchBar(),
         ],
       ),
     );
@@ -278,17 +281,10 @@ class _ResponsiveMyLocationFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final screenType = context.screenType;
-
-    // Adjust right offset for desktop to avoid sheet overlap
-    final rightOffset = switch (screenType) {
-      ScreenType.expanded => 420.0,
-      _ => 20.0,
-    };
 
     return Positioned(
-      bottom: 100,
-      right: rightOffset,
+      bottom: 120,
+      right: 20,
       child: FloatingActionButton(
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,

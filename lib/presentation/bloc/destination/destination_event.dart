@@ -71,3 +71,8 @@ class LoadDestinationAddress extends DestinationEvent {
   @override
   List<Object?> get props => [destinationId];
 }
+
+/// Clear all destinations
+class ClearAllDestinations extends DestinationEvent {
+  const ClearAllDestinations();
+}

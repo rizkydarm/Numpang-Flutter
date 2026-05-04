@@ -45,80 +45,82 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
     final colorScheme = theme.colorScheme;
     final screenType = context.screenType;
 
-    // Adjust positioning for desktop to avoid bottom sheet overlap
-    final leftOffset = switch (screenType) {
-      ScreenType.expanded => 540.0,
-      _ => 16.0,
-    };
-    final rightOffset = switch (screenType) {
-      ScreenType.expanded => 420.0,
-      _ => 16.0,
-    };
+    // Desktop: left-aligned with max-width 500px
+    final isExpanded = screenType == ScreenType.expanded;
+    final leftOffset = isExpanded ? 24.0 : 16.0;
+    final rightOffset = isExpanded ? null : 16.0;
+    final maxWidth = isExpanded ? 500.0 : double.infinity;
 
     return Positioned(
       top: 16,
       left: leftOffset,
       right: rightOffset,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHigh,
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                children: [
-                  Icon(Icons.search, size: 20, color: colorScheme.outline),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      style: theme.textTheme.bodyMedium,
-                      decoration: InputDecoration(
-                        hintText: 'Search here',
-                        hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.outline,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHigh,
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.search, size: 20, color: colorScheme.outline),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        style: theme.textTheme.bodyMedium,
+                        decoration: InputDecoration(
+                          hintText: 'Search here',
+                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.outline,
+                          ),
+                          border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
                         ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
+                        onChanged: _onQueryChanged,
                       ),
-                      onChanged: _onQueryChanged,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          if (_isDropdownVisible) const SizedBox(height: 8),
-          if (_isDropdownVisible)
-            BlocBuilder<SearchBloc, SearchState>(
-              buildWhen: (p, n) =>
-                  p.suggestions != n.suggestions ||
-                  p.isLoading != n.isLoading ||
-                  p.error != n.error,
-              builder: (context, state) {
-                if (state.error != null) {
-                  debugPrint('[FloatingSearchBar] Error: ${state.error}');
-                  return _buildErrorWidget(context, state.error!);
-                }
-                return AutocompleteDropdown(
-                  suggestions: state.suggestions,
-                  isLoading: state.isLoading,
-                  onSuggestionSelected: (suggestion) {
-                    _controller.clear();
-                    _focusNode.unfocus();
-                    setState(() => _isDropdownVisible = false);
-                    _showPlaceDialog(context, suggestion);
-                  },
-                );
-              },
-            ),
-        ],
+            if (_isDropdownVisible) const SizedBox(height: 8),
+            if (_isDropdownVisible)
+              BlocBuilder<SearchBloc, SearchState>(
+                buildWhen: (p, n) =>
+                    p.suggestions != n.suggestions ||
+                    p.isLoading != n.isLoading ||
+                    p.error != n.error,
+                builder: (context, state) {
+                  if (state.error != null) {
+                    debugPrint('[FloatingSearchBar] Error: ${state.error}');
+                    return _buildErrorWidget(context, state.error!);
+                  }
+                  return AutocompleteDropdown(
+                    suggestions: state.suggestions,
+                    isLoading: state.isLoading,
+                    onSuggestionSelected: (suggestion) {
+                      _controller.clear();
+                      _focusNode.unfocus();
+                      setState(() => _isDropdownVisible = false);
+                      _showPlaceDialog(context, suggestion);
+                    },
+                  );
+                },
+              ),
+          ],
+        ),
       ),
     );
   }

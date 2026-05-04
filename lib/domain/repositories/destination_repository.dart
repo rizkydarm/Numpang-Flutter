@@ -6,4 +6,5 @@ abstract class DestinationRepository {
   Future<Either<Failure, Destination>> addDestination(Destination destination);
   Future<Either<Failure, List<Destination>>> getDestinations();
   Future<Either<Failure, void>> deleteDestination(String id);
+  Future<Either<Failure, void>> deleteAllDestinations();
 }

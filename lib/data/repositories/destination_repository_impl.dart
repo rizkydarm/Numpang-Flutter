@@ -7,17 +7,18 @@ import 'package:numpang_app/domain/entities/destination.dart';
 import 'package:numpang_app/domain/repositories/destination_repository.dart';
 
 class DestinationRepositoryImpl implements DestinationRepository {
-
   DestinationRepositoryImpl({
     required DestinationLocalDataSource localDataSource,
     required DestinationRemoteDataSource remoteDataSource,
-  })  : _localDataSource = localDataSource,
-        _remoteDataSource = remoteDataSource;
+  }) : _localDataSource = localDataSource,
+       _remoteDataSource = remoteDataSource;
   final DestinationLocalDataSource _localDataSource;
   final DestinationRemoteDataSource _remoteDataSource;
 
   @override
-  Future<Either<Failure, Destination>> addDestination(Destination destination) async {
+  Future<Either<Failure, Destination>> addDestination(
+    Destination destination,
+  ) async {
     try {
       final model = DestinationModel.fromEntity(destination);
       final result = await _localDataSource.addDestination(model);
@@ -58,6 +59,16 @@ class DestinationRepositoryImpl implements DestinationRepository {
       return const Right(null);
     } catch (e) {
       return const Left(CacheFailure(message: 'Failed to delete destination'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAllDestinations() async {
+    try {
+      await _localDataSource.clearAll();
+      return const Right(null);
+    } catch (e) {
+      return const Left(CacheFailure(message: 'Failed to clear destinations'));
     }
   }
 }

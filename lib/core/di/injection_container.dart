@@ -87,6 +87,7 @@ class InjectionContainer extends StatelessWidget {
               addDestination: addDestinationUseCase,
               deleteDestination: deleteDestinationUseCase,
               geocodingRepository: geocodingRepository,
+              destinationRepository: destinationRepository,
             ),
           ),
         ],

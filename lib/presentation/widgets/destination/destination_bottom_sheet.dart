@@ -42,7 +42,6 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
       controller: _controller,
       initialChildSize: _collapsedSize,
       minChildSize: _collapsedSize,
-      maxChildSize: _fullSize,
       snap: true,
       snapSizes: const [_collapsedSize, _halfSize, _fullSize],
       builder: (context, scrollController) {
@@ -89,10 +88,10 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                         margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: isDark
-                            ? AppColors.textTertiaryDark.withValues(
-                                alpha: 0.5,
-                              )
-                            : AppColors.textTertiary.withValues(alpha: 0.5),
+                              ? AppColors.textTertiaryDark.withValues(
+                                  alpha: 0.5,
+                                )
+                              : AppColors.textTertiary.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(2),
                         ),
                         height: 4,
@@ -104,29 +103,40 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
                         children: [
-                          Text(
-                            'Destinations',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.textPrimary,
+                          Expanded(
+                            child: Text(
+                              'Destinations',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? AppColors.textPrimaryDark
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            state.destinations.isEmpty
-                              ? 'No destinations'
-                              : '${state.destinations.length} ${state.destinations.length == 1 ? 'place' : 'places'} saved',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: isDark
-                                ? AppColors.textSecondaryDark
-                                : AppColors.textSecondary,
+                          if (state.destinations.isNotEmpty)
+                            IconButton(
+                              icon: Icon(
+                                Icons.clear_all,
+                                size: 20,
+                                color: isDark
+                                    ? AppColors.textTertiaryDark
+                                    : AppColors.textTertiary,
+                              ),
+                              tooltip: 'Clear all destinations',
+                              onPressed: () {
+                                context.read<DestinationBloc>().add(
+                                  const ClearAllDestinations(),
+                                );
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 32,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -140,35 +150,37 @@ class _DestinationBottomSheetState extends State<DestinationBottomSheet> {
                     SliverPadding(
                       padding: const EdgeInsets.only(bottom: 24),
                       sliver: SliverList.builder(
-                        itemCount: state.destinations.length,
+                        itemCount: state.destinations.isNotEmpty ? state.destinations.length : 1,
                         itemBuilder: (context, index) {
-                          final destination = state.destinations[index];
-                          return DestinationListItem(
-                            destination: destination,
-                            isSelected:
-                                state.selectedDestination?.id == destination.id,
-                            onTap: () {
-                              context.read<DestinationBloc>().add(
-                                SelectDestination(destination),
-                              );
-                              widget.onDestinationSelected?.call();
-                            },
-                            onDelete: () async {
-                              final confirmed =
-                                await DeleteConfirmationDialog.show(
-                                  context,
-                                  destination.name,
-                                );
-                              if (confirmed && context.mounted) {
+                          if (state.destinations.isNotEmpty) {
+                            final destination = state.destinations[index];
+                            return DestinationListItem(
+                              destination: destination,
+                              isSelected:
+                                  state.selectedDestination?.id == destination.id,
+                              onTap: () {
                                 context.read<DestinationBloc>().add(
-                                  DeleteDestination(
-                                    id: destination.id,
-                                    name: destination.name,
-                                  ),
+                                  SelectDestination(destination),
                                 );
-                              }
-                            },
-                          );
+                                widget.onDestinationSelected?.call();
+                              },
+                              onDelete: () async {
+                                if (context.mounted) {
+                                  context.read<DestinationBloc>().add(
+                                    DeleteDestination(
+                                      id: destination.id,
+                                      name: destination.name,
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          } else {
+                            return const SizedBox(
+                              height: 200,
+                              child: Center(child: Text('No destinations found')),
+                            );
+                          }
                         },
                       ),
                     ),

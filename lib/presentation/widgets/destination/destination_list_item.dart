@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/core/theme/app_theme.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_bloc.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_event.dart';
 import 'package:numpang_app/presentation/bloc/destination/destination_state.dart';
+import 'package:numpang_app/presentation/bloc/map_bloc.dart';
+import 'package:numpang_app/presentation/bloc/map_state.dart';
 
 class DestinationListItem extends StatefulWidget {
   const DestinationListItem({
@@ -45,19 +48,14 @@ class _DestinationListItemState extends State<DestinationListItem> {
       key: Key(widget.destination.id),
       direction: DismissDirection.endToStart,
       onDismissed: (_) => widget.onDelete(),
-      confirmDismiss: (_) async {
-        // Return true to confirm, false to cancel
-        // Confirmation dialog handled by parent
-        return true;
-      },
-      background: Align(
-        alignment: Alignment.centerRight,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: Colors.red.shade700,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Padding(
+      background: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.red.shade700,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
             padding: EdgeInsets.only(right: 24),
             child: Icon(Icons.delete, color: Colors.white),
           ),
@@ -109,6 +107,10 @@ class _DestinationListItemState extends State<DestinationListItem> {
                 fallbackAddress: widget.destination.address,
               ),
               const SizedBox(height: 4),
+              _DestinationDistanceText(
+                destination: widget.destination,
+              ),
+              const SizedBox(height: 4),
               Text(
                 _formatDate(widget.destination.createdAt),
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -148,6 +150,44 @@ class _DestinationListItemState extends State<DestinationListItem> {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+}
+
+class _DestinationDistanceText extends StatelessWidget {
+  const _DestinationDistanceText({
+    required this.destination,
+  });
+
+  final Destination destination;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MapBloc, MapState>(
+      buildWhen: (prev, curr) => prev.center != curr.center,
+      builder: (context, state) {
+        final distance = Distance();
+        final meters = distance(
+          state.center,
+          LatLng(destination.latitude, destination.longitude),
+        );
+
+        String distanceText;
+        if (meters < 1000) {
+          distanceText = '${meters.toStringAsFixed(0)} m';
+        } else {
+          distanceText = '${(meters / 1000).toStringAsFixed(1)} km';
+        }
+
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Text(
+          distanceText,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontSize: 11,
+            color: isDark ? AppColors.textTertiaryDark : AppColors.textTertiary,
+          ),
+        );
+      },
+    );
   }
 }
 

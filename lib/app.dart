@@ -11,6 +11,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return InjectionContainer(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: F.title,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
@@ -20,4 +21,3 @@ class App extends StatelessWidget {
     );
   }
 }
-

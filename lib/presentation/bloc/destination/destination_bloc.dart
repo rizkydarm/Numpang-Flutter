@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:numpang_app/domain/entities/destination.dart';
+import 'package:numpang_app/domain/repositories/destination_repository.dart';
 import 'package:numpang_app/domain/repositories/geocoding_repository.dart';
 import 'package:numpang_app/domain/usecases/add_destination_usecase.dart';
 import 'package:numpang_app/domain/usecases/delete_destination_usecase.dart';
@@ -14,10 +15,12 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
     required AddDestinationUseCase addDestination,
     required DeleteDestinationUseCase deleteDestination,
     required GeocodingRepository geocodingRepository,
+    required DestinationRepository destinationRepository,
   }) : _getDestinations = getDestinations,
        _addDestination = addDestination,
        _deleteDestination = deleteDestination,
        _geocodingRepository = geocodingRepository,
+       _destinationRepository = destinationRepository,
        super(DestinationState.initial()) {
     on<LoadDestinations>(_onLoadDestinations);
     on<AddDestination>(_onAddDestination);
@@ -26,6 +29,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
     on<ClearDestinationError>(_onClearError);
     on<RefreshDestinations>(_onLoadDestinations);
     on<LoadDestinationAddress>(_onLoadDestinationAddress);
+    on<ClearAllDestinations>(_onClearAllDestinations);
 
     // Load destinations on init
     add(const LoadDestinations());
@@ -34,6 +38,7 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
   final AddDestinationUseCase _addDestination;
   final DeleteDestinationUseCase _deleteDestination;
   final GeocodingRepository _geocodingRepository;
+  final DestinationRepository _destinationRepository;
 
   Future<void> _onLoadDestinations(
     DestinationEvent event,
@@ -153,6 +158,27 @@ class DestinationBloc extends Bloc<DestinationEvent, DestinationState> {
         )..[event.destinationId] = address;
         emit(state.copyWith(destinationAddresses: updatedAddresses));
       },
+    );
+  }
+
+  Future<void> _onClearAllDestinations(
+    ClearAllDestinations event,
+    Emitter<DestinationState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true, clearError: true));
+
+    final result = await _destinationRepository.deleteAllDestinations();
+
+    result.fold(
+      (failure) => emit(state.copyWith(isLoading: false, error: failure)),
+      (_) => emit(
+        state.copyWith(
+          destinations: [],
+          isLoading: false,
+          clearSelected: true,
+          destinationAddresses: {},
+        ),
+      ),
     );
   }
 }
