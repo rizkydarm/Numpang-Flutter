@@ -26,37 +26,34 @@ class AutocompleteDropdown extends StatelessWidget {
       child: SizedBox(
         height: suggestions.isEmpty && !isLoading ? 60 : null,
         child: isLoading
-            ? const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFCA28)),
+            ? const Padding(
+              padding: EdgeInsets.all(8),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+            : suggestions.isEmpty
+            ? Center(
+                child: Text(
+                  'No results found',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               )
-            : suggestions.isEmpty
-                ? Center(
-                    child: Text(
-                      'No results found',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.zero,
-                    itemCount: suggestions.length,
-                    itemBuilder: (context, index) {
-                      final suggestion = suggestions[index];
-                      return _SuggestionTile(
-                        suggestion: suggestion,
-                        onTap: () => onSuggestionSelected(suggestion),
-                      );
-                    },
-                  ),
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: suggestions.length,
+                itemBuilder: (context, index) {
+                  final suggestion = suggestions[index];
+                  return _SuggestionTile(
+                    suggestion: suggestion,
+                    onTap: () => onSuggestionSelected(suggestion),
+                  );
+                },
+              ),
       ),
     );
   }

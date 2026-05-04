@@ -59,7 +59,7 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 children: [
-                  const Icon(Icons.search, size: 20, color: Color(0xFF9B9079)),
+                  Icon(Icons.search, size: 20, color: colorScheme.outline),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
@@ -69,7 +69,7 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
                       decoration: InputDecoration(
                         hintText: 'Search here',
                         hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF9B9079),
+                          color: colorScheme.outline,
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -163,8 +163,8 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
               icon: const Icon(Icons.add, size: 18),
               label: const Text('Add'),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFFFCA28),
-                foregroundColor: const Color(0xFF705600),
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
               ),
             ),
           ],

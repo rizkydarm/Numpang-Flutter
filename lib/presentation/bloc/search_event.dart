@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:numpang_app/data/models/recent_search_model.dart';
 import 'package:numpang_app/domain/entities/place_suggestion.dart';
 
 abstract class SearchEvent extends Equatable {

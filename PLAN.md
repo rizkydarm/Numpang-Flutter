@@ -389,19 +389,19 @@ MAPBOX_API_KEY=your_key_here
 ### Phase 5: Search & Discovery (Days 17-20)
 
 **Agent A: Search Logic**
-- [ ] Implement Places API autocomplete with debounce
-- [ ] Implement place details fetching
-- [ ] Add recent searches (local storage)
-- [ ] Create category chips data structure
-- [ ] Write unit tests for search logic
+- [x] Implement Places API autocomplete with debounce
+- [x] Implement place details fetching
+- [x] Add recent searches (local storage)
+- [x] Create category chips data structure
+- [x] Write unit tests for search logic
 
 **Agent B: Search UI**
-- [ ] Create `FloatingSearchBar` widget
-- [ ] Implement autocomplete dropdown
-- [ ] Implement search result selection handler
-- [ ] Add "Add to Destinations" button on selection
-- [ ] Show loading state during search
-- [ ] Handle search errors gracefully
+- [x] Create `FloatingSearchBar` widget
+- [x] Implement autocomplete dropdown
+- [x] Implement search result selection handler
+- [x] Add "Add to Destinations" button on selection
+- [x] Show loading state during search
+- [x] Handle search errors gracefully
 
 **Milestone M5**: Search returns results, selecting centers map, user can add
 

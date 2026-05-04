@@ -8,8 +8,8 @@ import 'package:numpang_app/app.dart';
 import 'package:numpang_app/data/models/recent_search_model.dart';
 import 'package:numpang_app/flavors.dart';
 
-void main() {
-  runZonedGuarded(
+void main() async {
+  await runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
