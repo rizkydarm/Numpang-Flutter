@@ -416,11 +416,8 @@ MAPBOX_API_KEY=your_key_here
 - [ ] Create responsive typography scaler
 
 **Agent B: Adaptive Components**
-- [ ] Convert bottom sheet to side panel for tablet
-- [ ] Implement desktop keyboard shortcuts
-- [ ] Add split-view for landscape tablet
-- [ ] Create adaptive app bar (hamburger for desktop)
-- [ ] Implement multi-pane layout for desktop
+- [ ] Make max width of bottom sheet and position in left (not center) when in breakpoint >= 1024px
+- [ ] Make max width of search bar and position in center when in breakpoint >= 1024px
 - [ ] Add settings page with adaptive layout
 - [ ] Test all layouts on target breakpoints
 

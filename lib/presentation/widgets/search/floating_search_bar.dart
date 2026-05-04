@@ -10,6 +10,7 @@ import 'package:numpang_app/presentation/bloc/map_event.dart';
 import 'package:numpang_app/presentation/bloc/search_bloc.dart';
 import 'package:numpang_app/presentation/bloc/search_event.dart';
 import 'package:numpang_app/presentation/bloc/search_state.dart';
+import 'package:numpang_app/presentation/responsive/breakpoints.dart';
 import 'package:numpang_app/presentation/widgets/search/autocomplete_dropdown.dart';
 
 class FloatingSearchBar extends StatefulWidget {
@@ -42,11 +43,22 @@ class _FloatingSearchBarState extends State<FloatingSearchBar> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final screenType = context.screenType;
+
+    // Adjust positioning for desktop to avoid bottom sheet overlap
+    final leftOffset = switch (screenType) {
+      ScreenType.expanded => 540.0,
+      _ => 16.0,
+    };
+    final rightOffset = switch (screenType) {
+      ScreenType.expanded => 420.0,
+      _ => 16.0,
+    };
 
     return Positioned(
       top: 16,
-      left: 16,
-      right: 16,
+      left: leftOffset,
+      right: rightOffset,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

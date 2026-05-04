@@ -12,6 +12,7 @@ import 'package:numpang_app/presentation/bloc/map_state.dart';
 import 'package:numpang_app/presentation/bloc/search_bloc.dart';
 import 'package:numpang_app/presentation/bloc/search_event.dart';
 import 'package:numpang_app/presentation/bloc/search_state.dart';
+import 'package:numpang_app/presentation/responsive/breakpoints.dart';
 import 'package:numpang_app/presentation/widgets/destination/destination_widgets.dart';
 import 'package:numpang_app/presentation/widgets/map/user_location_marker.dart';
 import 'package:numpang_app/presentation/widgets/search/floating_search_bar.dart';
@@ -145,8 +146,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return BlocListener<MapBloc, MapState>(
       listenWhen: (previous, current) => previous.error != current.error,
       listener: (context, state) {
@@ -216,8 +215,8 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
-          _MyLocationFab(theme: theme),
-          const Positioned.fill(child: DestinationBottomSheet()),
+          const _ResponsiveMyLocationFab(),
+          const _ResponsiveBottomSheetWrapper(),
           const FloatingSearchBar(),
         ],
       ),
@@ -245,15 +244,51 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
-class _MyLocationFab extends StatelessWidget {
-  const _MyLocationFab({required this.theme});
-  final ThemeData theme;
+class _ResponsiveBottomSheetWrapper extends StatelessWidget {
+  const _ResponsiveBottomSheetWrapper();
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      builder: (context, screenType) {
+        final maxWidth = BottomSheetConstraints.maxWidth(screenType);
+        final alignment = BottomSheetConstraints.alignment(screenType);
+        final sideMargin = BottomSheetConstraints.bottomSheetSideMargin(
+          screenType,
+        );
+
+        return Align(
+          alignment: alignment,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: sideMargin),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: const DestinationBottomSheet(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ResponsiveMyLocationFab extends StatelessWidget {
+  const _ResponsiveMyLocationFab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final screenType = context.screenType;
+
+    // Adjust right offset for desktop to avoid sheet overlap
+    final rightOffset = switch (screenType) {
+      ScreenType.expanded => 420.0,
+      _ => 20.0,
+    };
+
     return Positioned(
       bottom: 100,
-      right: 20,
+      right: rightOffset,
       child: FloatingActionButton(
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
